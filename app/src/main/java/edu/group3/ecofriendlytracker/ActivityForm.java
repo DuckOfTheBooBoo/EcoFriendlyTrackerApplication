@@ -17,10 +17,11 @@ public class ActivityForm extends javax.swing.JFrame {
     }
     
     private void additionalGUIConfig() {
+        this.setLocationRelativeTo(null); // Make frame appear on center
         numInputField = new javax.swing.JSpinner();
         numInputField.setPreferredSize(new java.awt.Dimension(70, 25));
-        jPanel6.add(numInputField);
-        jPanel6.setVisible(false);
+        calcMetricPanel.add(numInputField);
+        calcMetricPanel.setVisible(false);
     }
     
     /**
@@ -47,15 +48,20 @@ public class ActivityForm extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         specificOption = new javax.swing.JLabel();
         specificOptionCbx = new javax.swing.JComboBox<>();
-        jPanel6 = new javax.swing.JPanel();
-        specificOption2 = new javax.swing.JLabel();
+        calcMetricPanel = new javax.swing.JPanel();
+        calcMetricLabel = new javax.swing.JLabel();
+        actionContainer = new javax.swing.JPanel();
+        actionPanel = new javax.swing.JPanel();
+        submitBtn = new javax.swing.JButton();
+        cancelBtn = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(jTextPane1);
 
         jScrollPane2.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(300, 300));
+        setTitle("Activity Form");
+        setPreferredSize(null);
         setResizable(false);
         getContentPane().setLayout(new java.awt.FlowLayout());
 
@@ -110,19 +116,38 @@ public class ActivityForm extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel1.add(jPanel4, gridBagConstraints);
 
-        specificOption2.setText("CalcMetric");
+        calcMetricLabel.setText("CalcMetric");
         specificOption.setVisible(false);
-        jPanel6.add(specificOption2);
+        calcMetricPanel.add(calcMetricLabel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        jPanel1.add(jPanel6, gridBagConstraints);
+        jPanel1.add(calcMetricPanel, gridBagConstraints);
+
+        submitBtn.setText("Submit");
+        actionPanel.add(submitBtn);
+
+        cancelBtn.setText("Cancel");
+        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelBtnActionPerformed(evt);
+            }
+        });
+        actionPanel.add(cancelBtn);
+
+        actionContainer.add(actionPanel);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        jPanel1.add(actionContainer, gridBagConstraints);
 
         getContentPane().add(jPanel1);
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void categoryComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryComboBoxActionPerformed
@@ -194,12 +219,20 @@ public class ActivityForm extends javax.swing.JFrame {
                 break;
         }
         
+        calcMetricLabel.setText("Distance traveled (km):");
+        calcMetricPanel.setVisible(true);
+        
         specificOptionCbx.setVisible(true);
         specificOption.setVisible(true);
         specificOptionCbx.setEnabled(true);
         
         pack();
     }//GEN-LAST:event_subCatComboBoxActionPerformed
+
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -238,6 +271,11 @@ public class ActivityForm extends javax.swing.JFrame {
    
     private javax.swing.JSpinner numInputField;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel actionContainer;
+    private javax.swing.JPanel actionPanel;
+    private javax.swing.JLabel calcMetricLabel;
+    private javax.swing.JPanel calcMetricPanel;
+    private javax.swing.JButton cancelBtn;
     private javax.swing.JComboBox<String> categoryComboBox;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
@@ -246,13 +284,12 @@ public class ActivityForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JLabel specificOption;
-    private javax.swing.JLabel specificOption2;
     private javax.swing.JComboBox<String> specificOptionCbx;
     private javax.swing.JComboBox<String> subCatComboBox;
+    private javax.swing.JButton submitBtn;
     // End of variables declaration//GEN-END:variables
 }
