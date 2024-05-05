@@ -25,6 +25,7 @@ public class ActivityForm extends javax.swing.JFrame {
         initComponents();
         additionalGUIConfig();
         form = new Form();
+        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
     }
     
     private void additionalGUIConfig() {
