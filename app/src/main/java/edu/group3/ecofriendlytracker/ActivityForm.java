@@ -11,21 +11,34 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class ActivityForm extends javax.swing.JFrame {
     private boolean addOpVisible = false;
+    private Form form;
     /**
      * Creates new form ActivityForm
      */
     public ActivityForm() {
         initComponents();
         additionalGUIConfig();
+        form = new Form();
     }
     
     private void additionalGUIConfig() {
         GridBagConstraints gridBagConstraints;
         this.setLocationRelativeTo(null); // Make frame appear on center
         numInputField = new javax.swing.JSpinner();
+        
+        // JSpinner OnValue changed event listener
+        numInputField.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent ce) {
+                numInputFieldListener(ce);
+            } 
+        });
+        
         numInputField.setPreferredSize(new java.awt.Dimension(70, 25));
         
         // Place JSpinner inside GridBag X1 Y4
@@ -218,6 +231,11 @@ public class ActivityForm extends javax.swing.JFrame {
         addOpLabel.setVisible(false);
 
         addOpCbx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
+        addOpCbx.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addOpCbxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -246,6 +264,8 @@ public class ActivityForm extends javax.swing.JFrame {
         }
         
         String selectedCategory = String.valueOf(categoryComboBox.getSelectedItem());
+        form.category = selectedCategory;
+        
         String[] subCat;
         DefaultComboBoxModel<String> model;
         
@@ -270,7 +290,29 @@ public class ActivityForm extends javax.swing.JFrame {
         
         pack();
     }//GEN-LAST:event_categoryComboBoxActionPerformed
+    
+    private void numInputFieldListener(ChangeEvent ce) {
+        double value = Double.valueOf(((JSpinner) ce.getSource()).getValue().toString());
+        
+        if (form.validate()) {
+            form.calcMetric = value;
+            String emissionKey = Emission.formIdParser(form);
+            double emission = Emission.getEmissionAmount(emissionKey);
+            double emissionTotal = emission * form.calcMetric;
+            String equation = String.format(
+                    "%s * %s = %s kgCO2e",
+                    emission, form.calcMetric, emissionTotal
+            );
 
+            System.out.println(equation);
+
+            calcDetailLabel.setText(equation);
+            calcDetailLabel.setVisible(true);
+            calcDetailPanel.setVisible(true);
+            pack();
+        }
+    }
+    
     private void subCatComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subCatComboBoxActionPerformed
         // TODO add your handling code here:
         if (addOpVisible) {
@@ -278,6 +320,7 @@ public class ActivityForm extends javax.swing.JFrame {
         }
         
         String subCatSelection = String.valueOf(subCatComboBox.getSelectedItem());
+        form.subCategory = subCatSelection;
         DefaultComboBoxModel<String> specificModel;
         switch (subCatSelection) {
             // Transportation
@@ -352,6 +395,7 @@ public class ActivityForm extends javax.swing.JFrame {
         }
         
         String specificOptionSelection = String.valueOf(specificOptionCbx.getSelectedItem());
+        form.specific = specificOptionSelection;
         
         if (String.valueOf(categoryComboBox.getSelectedItem()).equals("Transportation")) {
             calcMetricLabel.setText("Distance Traveled (km):");
@@ -364,7 +408,7 @@ public class ActivityForm extends javax.swing.JFrame {
                     // Show additional option components
                     addOpLabel.setText("Temperature:");
                     addOpCbx.setModel(new DefaultComboBoxModel<String>(
-                            new String[] {"Low temperature", "Medium temperature", "High temperature"}
+                            new String[] {"", "Low temperature", "Medium temperature", "High temperature"}
                     ));
                     showAddOpComponents();
                     
@@ -388,20 +432,25 @@ public class ActivityForm extends javax.swing.JFrame {
 
     private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
         // TODO add your handling code here:
-        String category = String.valueOf(categoryComboBox.getSelectedItem());
-        String subCategory = String.valueOf(subCatComboBox.getSelectedItem());
-        String specificCategory = String.valueOf(specificOptionCbx.getSelectedItem());
-        String additionalOption = String.valueOf(addOpCbx.getSelectedItem());
-        String calculationMetric = String.valueOf(numInputField.getValue());
-        
-        System.out.println(String.format("""
-        Category: %s
-        Sub-category: %s
-        Fuel-type/Activity-type: %s
-        Additional option: %s
-        Calculation metric: %s
-        """, category, subCategory, specificCategory, additionalOption, calculationMetric));
+//        String category = String.valueOf(categoryComboBox.getSelectedItem());
+//        String subCategory = String.valueOf(subCatComboBox.getSelectedItem());
+//        String specificCategory = String.valueOf(specificOptionCbx.getSelectedItem());
+//        String additionalOption = String.valueOf(addOpCbx.getSelectedItem());
+//        String calculationMetric = String.valueOf(numInputField.getValue());
+//        Emission.formIdParser(form);
+//        System.out.println(String.format("""
+//        Category: %s
+//        Sub-category: %s
+//        Fuel-type/Activity-type: %s
+//        Additional option: %s
+//        Calculation metric: %s
+//        """, form.category, form.subCategory, form.specific, form.additionalOption, form.calcMetric));
     }//GEN-LAST:event_submitBtnActionPerformed
+
+    private void addOpCbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOpCbxActionPerformed
+        // TODO add your handling code here:
+        form.additionalOption = addOpCbx.getSelectedItem().toString();
+    }//GEN-LAST:event_addOpCbxActionPerformed
 
     /**
      * @param args the command line arguments
