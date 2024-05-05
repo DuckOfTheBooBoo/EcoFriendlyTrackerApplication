@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.JOptionPane;
 
 public class ActivityForm extends javax.swing.JFrame {
     private boolean addOpVisible = false;
@@ -35,7 +36,8 @@ public class ActivityForm extends javax.swing.JFrame {
         numInputField.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent ce) {
-                numInputFieldListener(ce);
+                Object target = ((JSpinner) ce.getSource()).getValue();
+                numInputFieldListener(target.toString());
             } 
         });
         
@@ -53,13 +55,17 @@ public class ActivityForm extends javax.swing.JFrame {
         textField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (!Character.isDigit(e.getKeyChar()) && e.getKeyChar() != '-') {
+                if (!Character.isDigit(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '.') {
                     e.consume();
-                }  
+                }
             }
 
             @Override
-            public void keyPressed(KeyEvent ke) {}
+            public void keyPressed(KeyEvent ke) {
+                if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
+                    numInputFieldListener(textField.getText().toString());
+                }
+            }
 
             @Override
             public void keyReleased(KeyEvent ke) {}
@@ -291,14 +297,21 @@ public class ActivityForm extends javax.swing.JFrame {
         pack();
     }//GEN-LAST:event_categoryComboBoxActionPerformed
     
-    private void numInputFieldListener(ChangeEvent ce) {
-        double value = Double.valueOf(((JSpinner) ce.getSource()).getValue().toString());
+    private void numInputFieldListener(String stringValue) {
+        double value = -0;
         
+        try {
+            value = Double.valueOf(stringValue);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid Calculation Metric", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        form.calcMetric = value;
         if (form.validate()) {
-            form.calcMetric = value;
             String emissionKey = Emission.formIdParser(form);
             double emission = Emission.getEmissionAmount(emissionKey);
-            double emissionTotal = emission * form.calcMetric;
+            double emissionTotal = Math.round((emission * form.calcMetric) * 10000) / 10000.0;
+            form.emissionTotal = emissionTotal;
             String equation = String.format(
                     "%s * %s = %s kgCO2e",
                     emission, form.calcMetric, emissionTotal
@@ -432,19 +445,13 @@ public class ActivityForm extends javax.swing.JFrame {
 
     private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
         // TODO add your handling code here:
-//        String category = String.valueOf(categoryComboBox.getSelectedItem());
-//        String subCategory = String.valueOf(subCatComboBox.getSelectedItem());
-//        String specificCategory = String.valueOf(specificOptionCbx.getSelectedItem());
-//        String additionalOption = String.valueOf(addOpCbx.getSelectedItem());
-//        String calculationMetric = String.valueOf(numInputField.getValue());
-//        Emission.formIdParser(form);
-//        System.out.println(String.format("""
-//        Category: %s
-//        Sub-category: %s
-//        Fuel-type/Activity-type: %s
-//        Additional option: %s
-//        Calculation metric: %s
-//        """, form.category, form.subCategory, form.specific, form.additionalOption, form.calcMetric));
+        form.print();
+        if(!form.validate()) {
+            JOptionPane.showMessageDialog(this, "Please fill the form correctly.", "Invalid Form", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Insert form data into database
     }//GEN-LAST:event_submitBtnActionPerformed
 
     private void addOpCbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOpCbxActionPerformed
