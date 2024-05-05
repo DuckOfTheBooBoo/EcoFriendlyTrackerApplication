@@ -4,7 +4,15 @@ package edu.group3.ecofriendlytracker;
  *
  * @author altaf
  */
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
 
 public class ActivityForm extends javax.swing.JFrame {
 
@@ -22,6 +30,23 @@ public class ActivityForm extends javax.swing.JFrame {
         numInputField.setPreferredSize(new java.awt.Dimension(70, 25));
         calcMetricPanel.add(numInputField);
         calcMetricPanel.setVisible(false);
+        JSpinner.NumberEditor editor = (JSpinner.NumberEditor) numInputField.getEditor();
+        JTextField textField = editor.getTextField();
+        
+        textField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (!Character.isDigit(e.getKeyChar()) && e.getKeyChar() != '-') {
+                    e.consume();
+                }  
+            }
+
+            @Override
+            public void keyPressed(KeyEvent ke) {}
+
+            @Override
+            public void keyReleased(KeyEvent ke) {}
+        });
     }
     
     /**
