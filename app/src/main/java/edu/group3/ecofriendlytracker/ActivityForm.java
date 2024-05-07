@@ -15,17 +15,57 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JOptionPane;
 
+
 public class ActivityForm extends javax.swing.JFrame {
     private boolean addOpVisible = false;
     private Form form;
+    private Integer activityId = null;
+    
     /**
-     * Creates new form ActivityForm
+     * Creates new empty ActivityForm (CREATE)
      */
     public ActivityForm() {
         initComponents();
         additionalGUIConfig();
-        form = new Form();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        form = new Form();
+    }
+    
+    /**
+     * Creates new form with already existing data from activity (UPDATE)
+     * @param activityId Id of activity in database
+     * @param activityForm A Form instance that contains activity's data
+     */
+    public ActivityForm(int activityId, Form activityForm) {
+        initComponents();
+        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        this.form = activityForm;
+        this.activityId = activityId;
+        additionalGUIConfig();
+        populateGUIFromForm();
+    }
+    
+    public void populateGUIFromForm() {
+        if(!this.form.category.isEmpty()) {
+//            categoryComboBox.setSelectedItem(form.category);
+            setupCategoryField(form.category);
+        }
+        
+        if(!this.form.subCategory.isEmpty()) {
+            setupSubCategoryField(form.category, form.subCategory);
+        }
+        
+        if(!this.form.specific.isEmpty()) {
+            setupSpecificField(form.subCategory, form.specific);
+        }
+        
+        if(!this.form.additionalOption.isEmpty()) {
+            setupAdditionalOption(form.additionalOption);
+        }
+        
+        if(this.form.calcMetric > 0.0) {
+            numInputField.setValue(form.calcMetric);
+        }
     }
     
     private void additionalGUIConfig() {
@@ -46,7 +86,7 @@ public class ActivityForm extends javax.swing.JFrame {
         
         // Place JSpinner inside GridBag X1 Y4
         calcMetricPanel.add(numInputField);
-//        numInputField.setVisible(false);
+
         
         calcMetricLabel.setVisible(false);
         calcDetailPanel.setVisible(false);
@@ -71,6 +111,117 @@ public class ActivityForm extends javax.swing.JFrame {
             @Override
             public void keyReleased(KeyEvent ke) {}
         });
+        
+        if(this.activityId != null) {
+            actionBtn.setText("Update");
+            this.setTitle("Update Activity Form");
+        }
+        
+        pack();
+    }
+    
+    private void setupCategoryField(String selectedCategory) {
+        categoryComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-", "Transportation", "Home-energy" }));
+        
+        if (selectedCategory != null) {
+            categoryComboBox.setSelectedItem(selectedCategory);
+        }
+    }
+    
+    private void setupSubCategoryField(String selectedCategory, String selectedSubCat) {
+        String[] subCat;
+        DefaultComboBoxModel<String> model;
+        
+        switch (selectedCategory) {
+            case "Transportation":
+                subCat = new String[]{"-", "Car", "Motorcycle", "Public Transportation", "Non-emission"};
+                model = new DefaultComboBoxModel(subCat);
+                subCatComboBox.setModel(model);
+                subCatComboBox.setEnabled(true);
+                break;
+            case "Home-energy":
+                subCat = new String[]{"-", "Natural gas or propane consumption", "Renewable energy"};
+                model = new DefaultComboBoxModel(subCat);
+                subCatComboBox.setModel(model);
+                subCatComboBox.setEnabled(true);
+                break;
+            default:
+                subCatComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"-"}));
+                subCatComboBox.setEnabled(false);
+                break;
+        }
+        
+        if (selectedSubCat != null) {
+            subCatComboBox.setSelectedItem(selectedSubCat);
+        }
+        
+        pack();
+    }
+    
+    private void setupSpecificField(String selectedSubCat, String specific) {
+        DefaultComboBoxModel<String> specificModel;
+        switch (selectedSubCat) {
+            // Transportation
+            case "Car":
+                specificModel = new DefaultComboBoxModel<String>(
+                        new String[] {"", "Gasoline", "Diesel", "Electric", "Hybrid"}
+                );
+                specificOptionCbx.setModel(specificModel);
+                specificOption.setText("Fuel type:");
+                break;
+            
+            case "Public Transportation":
+                specificModel = new DefaultComboBoxModel<String>(
+                        new String[] {"", "Bus", "Train"}
+                );
+                specificOptionCbx.setModel(specificModel);
+                specificOption.setText("Transport type:");
+                break;
+                
+            case "Motorcycle":
+                specificModel = new DefaultComboBoxModel<String>(
+                        new String[] {"", "Gasoline", "Electric"}
+                );
+                specificOptionCbx.setModel(specificModel);
+                specificOption.setText("Fuel type:");
+                break;
+            
+            case "Non-emission":
+                specificModel = new DefaultComboBoxModel<String>(
+                        new String[] {"", "Cycling", "Walking"}
+                );
+                specificOptionCbx.setModel(specificModel);
+                specificOption.setText("Activity type:");
+                break;
+            
+            // Home-energy
+            case "Natural gas or propane consumption":
+                specificModel = new DefaultComboBoxModel<String>(
+                        new String[] {"", "LPG powered stove", "Diesel generator set"}
+                );
+                specificOptionCbx.setModel(specificModel);
+                specificOption.setText("Activity:");
+                break;
+            
+            case "Renewable energy":
+                specificModel = new DefaultComboBoxModel<String>(
+                        new String[] {"", "Solar Panel"}
+                );
+                specificOptionCbx.setModel(specificModel);
+                specificOption.setText("Type:");
+                break;
+            default:
+                break;
+        }
+        
+        specificOptionCbx.setVisible(true);
+        specificOption.setVisible(true);
+        specificOptionCbx.setEnabled(true);
+        
+        if(specific != null) {
+            specificOptionCbx.setSelectedItem(specific);
+        }
+        
         pack();
     }
     
@@ -98,7 +249,7 @@ public class ActivityForm extends javax.swing.JFrame {
         calcDetailLabel = new javax.swing.JLabel();
         actionContainer = new javax.swing.JPanel();
         actionPanel = new javax.swing.JPanel();
-        submitBtn = new javax.swing.JButton();
+        actionBtn = new javax.swing.JButton();
         cancelBtn = new javax.swing.JButton();
         categoryComboBox = new javax.swing.JComboBox<>();
         subCatComboBox = new javax.swing.JComboBox<>();
@@ -113,7 +264,6 @@ public class ActivityForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Activity Form");
-        setPreferredSize(null);
         setResizable(false);
         getContentPane().setLayout(new java.awt.FlowLayout());
 
@@ -166,13 +316,13 @@ public class ActivityForm extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel1.add(calcDetailPanel, gridBagConstraints);
 
-        submitBtn.setText("Submit");
-        submitBtn.addActionListener(new java.awt.event.ActionListener() {
+        actionBtn.setText("Submit");
+        actionBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                submitBtnActionPerformed(evt);
+                actionBtnActionPerformed(evt);
             }
         });
-        actionPanel.add(submitBtn);
+        actionPanel.add(actionBtn);
 
         cancelBtn.setText("Cancel");
         cancelBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -273,29 +423,11 @@ public class ActivityForm extends javax.swing.JFrame {
         String selectedCategory = String.valueOf(categoryComboBox.getSelectedItem());
         form.category = selectedCategory;
         
-        String[] subCat;
-        DefaultComboBoxModel<String> model;
-        
-        switch (selectedCategory) {
-            case "Transportation":
-                subCat = new String[]{"-", "Car", "Motorcycle", "Public Transportation", "Non-emission"};
-                model = new DefaultComboBoxModel(subCat);
-                subCatComboBox.setModel(model);
-                subCatComboBox.setEnabled(true);
-                break;
-            case "Home-energy":
-                subCat = new String[]{"-", "Natural gas or propane consumption", "Renewable energy"};
-                model = new DefaultComboBoxModel(subCat);
-                subCatComboBox.setModel(model);
-                subCatComboBox.setEnabled(true);
-                break;
-            default:
-                subCatComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"-"}));
-                subCatComboBox.setEnabled(false);
-                break;
-        }
-        
-        pack();
+        if (!form.subCategory.isEmpty()) {
+            setupSubCategoryField(form.category, form.subCategory);
+        } else {
+            setupSubCategoryField(form.category, null);
+        } 
     }//GEN-LAST:event_categoryComboBoxActionPerformed
     
     private void numInputFieldListener(String stringValue) {
@@ -335,101 +467,26 @@ public class ActivityForm extends javax.swing.JFrame {
         
         String subCatSelection = String.valueOf(subCatComboBox.getSelectedItem());
         form.subCategory = subCatSelection;
-        DefaultComboBoxModel<String> specificModel;
-        switch (subCatSelection) {
-            // Transportation
-            case "Car":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Gasoline", "Diesel", "Electric", "Hybrid"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Fuel type:");
-                break;
-            
-            case "Public Transportation":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Bus", "Train"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Transport type:");
-                break;
-                
-            case "Motorcycle":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Gasoline", "Electric"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Fuel type:");
-                break;
-            
-            case "Non-emission":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Cycling", "Walking"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Activity type:");
-                break;
-            
-            // Home-energy
-            case "Natural gas or propane consumption":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "LPG powered stove", "Diesel generator set"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Activity:");
-                break;
-            
-            case "Renewable energy":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Solar Panel"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Type:");
-                break;
-            default:
-                break;
-        }
         
-        specificOptionCbx.setVisible(true);
-        specificOption.setVisible(true);
-        specificOptionCbx.setEnabled(true);
-        
-        pack();
+        setupSpecificField(subCatSelection, null);
     }//GEN-LAST:event_subCatComboBoxActionPerformed
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_cancelBtnActionPerformed
-
-    private void specificOptionCbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_specificOptionCbxActionPerformed
-        // TODO add your handling code here:
-        if (addOpVisible) {
-            hideAddOpComponents();
-        }
-        
-        String specificOptionSelection = String.valueOf(specificOptionCbx.getSelectedItem());
-        form.specific = specificOptionSelection;
-        
+    
+    private void setupCalcMetricField(String specificOptionSelected) {
         if (String.valueOf(categoryComboBox.getSelectedItem()).equals("Transportation")) {
             calcMetricLabel.setText("Distance Traveled (km):");
             calcMetricLabel.setVisible(true);
             calcMetricPanel.setVisible(true);
         } else {
-            switch (specificOptionSelection) {
+            switch (specificOptionSelected) {
                 case "LPG powered stove":
                     
                     // Show additional option components
-                    addOpLabel.setText("Temperature:");
-                    addOpCbx.setModel(new DefaultComboBoxModel<String>(
-                            new String[] {"", "Low temperature", "Medium temperature", "High temperature"}
-                    ));
-                    showAddOpComponents();
-                    
-                    calcMetricLabel.setText("Cooking duration (s):");
-                    calcMetricLabel.setVisible(true);
-                    calcMetricPanel.setVisible(true);
-                    addOpVisible = true;
+                    setupAdditionalOption(null);
                     break;
                 case "Solar Panel":
                 case "Diesel generator set":
@@ -442,9 +499,38 @@ public class ActivityForm extends javax.swing.JFrame {
             }
         }
         pack();
+    }
+    
+    private void setupAdditionalOption(String selectedAddOption) {
+        addOpLabel.setText("Temperature:");
+        addOpCbx.setModel(new DefaultComboBoxModel<String>(
+                new String[] {"", "Low temperature", "Medium temperature", "High temperature"}
+        ));
+        showAddOpComponents();
+
+        calcMetricLabel.setText("Cooking duration (s):");
+        calcMetricLabel.setVisible(true);
+        calcMetricPanel.setVisible(true);
+        addOpVisible = true;
+        
+        if(selectedAddOption != null) {
+            addOpCbx.setSelectedItem(selectedAddOption);
+        }
+    }
+    
+    private void specificOptionCbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_specificOptionCbxActionPerformed
+        // TODO add your handling code here:
+        if (addOpVisible) {
+            hideAddOpComponents();
+        }
+        
+        String specificOptionSelection = String.valueOf(specificOptionCbx.getSelectedItem());
+        form.specific = specificOptionSelection;
+        
+        setupCalcMetricField(specificOptionSelection);
     }//GEN-LAST:event_specificOptionCbxActionPerformed
 
-    private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
+    private void actionBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionBtnActionPerformed
         // TODO add your handling code here:
         form.print();
         if(!form.validate()) {
@@ -453,7 +539,7 @@ public class ActivityForm extends javax.swing.JFrame {
         }
         
         // Insert form data into database
-    }//GEN-LAST:event_submitBtnActionPerformed
+    }//GEN-LAST:event_actionBtnActionPerformed
 
     private void addOpCbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOpCbxActionPerformed
         // TODO add your handling code here:
@@ -509,6 +595,7 @@ public class ActivityForm extends javax.swing.JFrame {
     
     private javax.swing.JSpinner numInputField;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton actionBtn;
     private javax.swing.JPanel actionContainer;
     private javax.swing.JPanel actionPanel;
     private javax.swing.JComboBox<String> addOpCbx;
@@ -530,6 +617,5 @@ public class ActivityForm extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> specificOptionCbx;
     private javax.swing.JComboBox<String> subCatComboBox;
     private javax.swing.JLabel subCatLabel;
-    private javax.swing.JButton submitBtn;
     // End of variables declaration//GEN-END:variables
 }
