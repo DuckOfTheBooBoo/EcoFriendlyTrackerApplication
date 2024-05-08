@@ -14,12 +14,17 @@ import java.awt.GridBagConstraints;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JOptionPane;
+import java.sql.*;
+import java.util.*;
 
 
 public class ActivityForm extends javax.swing.JFrame {
     private boolean addOpVisible = false;
     private Form form;
     private Integer activityId = null;
+
+    // declaring var for dc classes -k
+    private DatabasesConnection databasesConnection;
     
     /**
      * Creates new empty ActivityForm (CREATE)
@@ -29,6 +34,14 @@ public class ActivityForm extends javax.swing.JFrame {
         additionalGUIConfig();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         form = new Form();
+
+        // declaring dbclasses into this class -k
+        try {
+            this.databasesConnection = new DatabasesConnection();
+            this.databasesConnection.connect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -43,6 +56,11 @@ public class ActivityForm extends javax.swing.JFrame {
         this.activityId = activityId;
         additionalGUIConfig();
         populateGUIFromForm();
+    }
+
+    // kalo diperluin ntaran -k
+    public DatabasesConnection getDatabasesConnection() {
+        return this.databasesConnection;
     }
     
     public void populateGUIFromForm() {
@@ -119,112 +137,106 @@ public class ActivityForm extends javax.swing.JFrame {
         
         pack();
     }
-    
+
+    // take categories from databases -k
     private void setupCategoryField(String selectedCategory) {
-        categoryComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-", "Transportation", "Home-energy" }));
-        
-        if (selectedCategory != null) {
-            categoryComboBox.setSelectedItem(selectedCategory);
+        try {
+            List<String> categories = databasesConnection.getCategories();
+            categories.add(0, "-");
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(categories.toArray(new String[0]));
+            categoryComboBox.setModel(model);
+
+            if (selectedCategory != null) {
+                categoryComboBox.setSelectedItem(selectedCategory);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-    
+
+    // set the sub-cat base on cateories and also taken from databases -k
     private void setupSubCategoryField(String selectedCategory, String selectedSubCat) {
-        String[] subCat;
         DefaultComboBoxModel<String> model;
-        
-        switch (selectedCategory) {
-            case "Transportation":
-                subCat = new String[]{"-", "Car", "Motorcycle", "Public Transportation", "Non-emission"};
-                model = new DefaultComboBoxModel(subCat);
-                subCatComboBox.setModel(model);
-                subCatComboBox.setEnabled(true);
-                break;
-            case "Home-energy":
-                subCat = new String[]{"-", "Natural gas or propane consumption", "Renewable energy"};
-                model = new DefaultComboBoxModel(subCat);
-                subCatComboBox.setModel(model);
-                subCatComboBox.setEnabled(true);
-                break;
-            default:
-                subCatComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"-"}));
-                subCatComboBox.setEnabled(false);
-                break;
+        try {
+            List<String> subCategories;
+            if (selectedCategory != null) {
+                subCategories = databasesConnection.getSubCategories(selectedCategory);
+            } else {
+                subCategories = databasesConnection.getSubCategories("");
+            }
+            subCategories.add(0, "-");
+            model = new DefaultComboBoxModel<>(subCategories.toArray(new String[0]));
+            subCatComboBox.setModel(model);
+            subCatComboBox.setEnabled(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            subCatComboBox.setModel(new DefaultComboBoxModel<>(new String[]{"-"}));
+            subCatComboBox.setEnabled(false);
         }
-        
+
         if (selectedSubCat != null) {
             subCatComboBox.setSelectedItem(selectedSubCat);
         }
-        
+
         pack();
     }
-    
+
+
+
     private void setupSpecificField(String selectedSubCat, String specific) {
         DefaultComboBoxModel<String> specificModel;
-        switch (selectedSubCat) {
-            // Transportation
-            case "Car":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Gasoline", "Diesel", "Electric", "Hybrid"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Fuel type:");
-                break;
-            
-            case "Public Transportation":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Bus", "Train"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Transport type:");
-                break;
-                
-            case "Motorcycle":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Gasoline", "Electric"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Fuel type:");
-                break;
-            
-            case "Non-emission":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Cycling", "Walking"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Activity type:");
-                break;
-            
-            // Home-energy
-            case "Natural gas or propane consumption":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "LPG powered stove", "Diesel generator set"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Activity:");
-                break;
-            
-            case "Renewable energy":
-                specificModel = new DefaultComboBoxModel<String>(
-                        new String[] {"", "Solar Panel"}
-                );
-                specificOptionCbx.setModel(specificModel);
-                specificOption.setText("Type:");
-                break;
-            default:
-                break;
+        try {
+            List<String> specificOptions;
+            if (selectedSubCat != null) {
+                specificOptions = databasesConnection.getSpecificOptions(selectedSubCat);
+            } else {
+                specificOptions = databasesConnection.getSpecificOptions("");
+            }
+            specificOptions.add(0, "");
+            specificModel = new DefaultComboBoxModel<>(specificOptions.toArray(new String[0]));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            specificModel = new DefaultComboBoxModel<>(new String[]{""});
         }
-        
+
+        // Set specific option text based on the selected sub-category -k
+        String optionText = getSpecificOptionText(selectedSubCat);
+        specificOption.setText(optionText);
+
+        specificOptionCbx.setModel(specificModel);
         specificOptionCbx.setVisible(true);
         specificOption.setVisible(true);
         specificOptionCbx.setEnabled(true);
-        
-        if(specific != null) {
+
+        if (specific != null) {
             specificOptionCbx.setSelectedItem(specific);
         }
-        
+
         pack();
     }
-    
+
+
+    private String getSpecificOptionText(String selectedSubCat) {
+        switch (selectedSubCat) {
+            case "Car":
+                return "Fuel type:";
+            case "Public Transportation":
+                return "Transport type:";
+            case "Motorcycle":
+                return "Fuel type:";
+            case "Non-emission":
+                return "Activity type:";
+            case "Natural gas or propane consumption":
+                return "Activity:";
+            case "Renewable energy":
+                return "Type:";
+            default:
+                return "";
+        }
+    }
+
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
