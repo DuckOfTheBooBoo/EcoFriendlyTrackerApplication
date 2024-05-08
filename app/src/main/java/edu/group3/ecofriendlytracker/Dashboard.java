@@ -1,16 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package edu.group3.ecofriendlytracker;
 
 
 import java.awt.BorderLayout;
+import java.text.DecimalFormat;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.category.DefaultCategoryDataset;
+import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.jfree.chart.labels.PieSectionLabelGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.PiePlot;
 
 
 /**
@@ -18,17 +21,43 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * @author noval
  */
 public class Dashboard extends javax.swing.JFrame {
-
+    
+    private Activity[] activities = {
+        new Activity(1, "Transportation", "Car", "Gasoline", null, 5.0, 0.81941),
+        new Activity(2, "Transportation", "Motorcycle", "Gasoline", null, 12.0, 1.39080),
+        new Activity(3, "Transportation", "Public transportation", "Bus", null, 1.5, 0.332803),
+        new Activity(4, "Transportation", "Public transportation", "Train", null, 39.0, 2.12940),
+        new Activity(5, "Home-energy", "Natural gas or propane consumption", "Diesel powered generator set", null, 48, 7.50336),
+        new Activity(6, "Home-energy", "Natural gas or propane consumption", "LPG powered stove", "Medium temperatue", (5.0*60), 1.55000)            
+    };
+    
     /**
      * Creates new form dashboard
      */
     public Dashboard() {
         initComponents();
+        additionalInit();
         ChartSetup();
-        
-//        DashboardPanel.add(ChartPanel, BorderLayout.CENTER);
     }
-
+    
+    private void additionalInit() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+        
+        for(int i = 0; i < activities.length; i++) {
+         // Construct specific type if additionalOption is not null
+            Activity activity = activities[i];
+            String specificCategory = activity.specificCategory();
+            if(activity.additionalOption() != null) {
+                specificCategory += String.format(" (%s)", activity.additionalOption());
+            }
+            
+            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric(), activity.emissionTotal()};
+            
+            model.addRow(rowData);
+        }
+    }    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -49,7 +78,7 @@ public class Dashboard extends javax.swing.JFrame {
         PreviousDaybtn = new javax.swing.JButton();
         NextDaybtn = new javax.swing.JButton();
         WeeklyPanel = new javax.swing.JPanel();
-        WeeklyChartPanel = new javax.swing.JPanel();
+        weeklyChartPanel = new javax.swing.JPanel();
         WeeksTitlePanel = new javax.swing.JPanel();
         WeeksLabel = new javax.swing.JLabel();
         ActionButtonPanel = new javax.swing.JPanel();
@@ -115,8 +144,8 @@ public class Dashboard extends javax.swing.JFrame {
 
         TabbedPane.addTab("Daily", DailyPanel);
 
-        WeeklyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        WeeklyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
+        weeklyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        weeklyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
 
         WeeksTitlePanel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
@@ -150,12 +179,12 @@ public class Dashboard extends javax.swing.JFrame {
                     .addComponent(WeeksTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ActionButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(186, Short.MAX_VALUE))
-            .addComponent(WeeklyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(weeklyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         WeeklyPanelLayout.setVerticalGroup(
             WeeklyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(WeeklyPanelLayout.createSequentialGroup()
-                .addComponent(WeeklyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
+                .addComponent(weeklyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(WeeksTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -218,6 +247,11 @@ public class Dashboard extends javax.swing.JFrame {
         ActionBtn.add(AddNewActivitybtn);
 
         EditActivitybtn.setText("Edit activity");
+        EditActivitybtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditActivitybtnActionPerformed(evt);
+            }
+        });
         ActionBtn.add(EditActivitybtn);
 
         jButton1.setText("Delete activity");
@@ -264,6 +298,7 @@ public class Dashboard extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_PreviousWeeksbtnActionPerformed
 
+    
     private void PreviousDaybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousDaybtnActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_PreviousDaybtnActionPerformed
@@ -272,35 +307,40 @@ public class Dashboard extends javax.swing.JFrame {
         // TODO add your handling code here:
        new ActivityForm().setVisible(true);
     }//GEN-LAST:event_AddNewActivitybtnActionPerformed
+
+    private void EditActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditActivitybtnActionPerformed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_EditActivitybtnActionPerformed
     
     
     /**
      * @param args the command line arguments
      */
     
-           private void ChartSetup() {
-            DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-            dataset.setValue("01-05-2024 - 07-05-2024", 200);
-            dataset.setValue("08-05-2024 - 14-05-2024", 150);
-            dataset.setValue("15-05-2024 - 22-05-2024", 100);
-                    
-            
-            JFreeChart Piechart = ChartFactory.createPieChart("Weekly data", dataset);
-            
-           ChartPanel chartpanel = new ChartPanel(Piechart);
-           WeeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
-           
-           
-               DefaultCategoryDataset Dataset = new DefaultCategoryDataset();
-               Dataset.addValue(300, "Daily Report", "7 March");
-               Dataset.addValue(200, "Daily Report", "8 March");
-               Dataset.addValue(150, "Daily Report", "9 March");
-               Dataset.addValue(100, "Daily Report", "10 March");
-               
-              JFreeChart Barchart = ChartFactory.createBarChart("Daily Report", "Day", "Daily Report", Dataset);
-              
-              ChartPanel dailypanel = new ChartPanel (Barchart);
-              DailyChartPanel.add(dailypanel, BorderLayout.CENTER);
+    private void ChartSetup() {
+        DefaultPieDataset weeklyDataset = DatasetFactory.weeklyChartDataset(activities);
+        
+        JFreeChart pieChart = ChartFactory.createPieChart("Weekly data", weeklyDataset);
+        PiePlot plot = (PiePlot) pieChart.getPlot();
+        
+        PieSectionLabelGenerator gen = new StandardPieSectionLabelGenerator("{0}: {1} ({2})", new DecimalFormat("0"), new DecimalFormat("0%"));
+        plot.setLabelGenerator(gen);
+                
+        ChartPanel chartpanel = new ChartPanel(pieChart);
+        weeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
+
+
+        DefaultCategoryDataset dailyDataset = new DefaultCategoryDataset();
+        dailyDataset.addValue(300, "Daily Report", "7 March");
+        dailyDataset.addValue(200, "Daily Report", "8 March");
+        dailyDataset.addValue(150, "Daily Report", "9 March");
+        dailyDataset.addValue(100, "Daily Report", "10 March");
+
+        JFreeChart Barchart = ChartFactory.createBarChart("Daily Report", "Day", "Daily Report", dailyDataset);
+
+        ChartPanel dailypanel = new ChartPanel (Barchart);
+        DailyChartPanel.add(dailypanel, BorderLayout.CENTER);
                        
     };
     
@@ -357,7 +397,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JButton PreviousDaybtn;
     private javax.swing.JButton PreviousWeeksbtn;
     private javax.swing.JTabbedPane TabbedPane;
-    private javax.swing.JPanel WeeklyChartPanel;
     private javax.swing.JPanel WeeklyPanel;
     private javax.swing.JLabel WeeksLabel;
     private javax.swing.JPanel WeeksTitlePanel;
@@ -365,5 +404,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JPanel weeklyChartPanel;
     // End of variables declaration//GEN-END:variables
+
 }
