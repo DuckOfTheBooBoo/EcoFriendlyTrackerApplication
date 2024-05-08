@@ -40,7 +40,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'edu.group3.ecofriendlytracker.App'
+    mainClass = 'edu.group3.ecofriendlytracker.Dashboard'
 }
 
 tasks.named('test') {
