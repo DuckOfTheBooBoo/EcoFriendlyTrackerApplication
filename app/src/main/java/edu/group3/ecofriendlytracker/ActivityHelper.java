@@ -2,6 +2,7 @@ package edu.group3.ecofriendlytracker;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +25,15 @@ public class ActivityHelper {
             String specificCatName = resultSet.getString("specific_cat_name");
             double calcMetric = resultSet.getDouble("calculation_metric");
             double emissionTotal = resultSet.getDouble("emission_total");
+            LocalDate dateCreated = resultSet.getDate("date_created").toLocalDate();
             Activity activity = new Activity(
                     activityId,
                     categoryName,
                     subCategoryName,
                     specificCatName,
                     calcMetric,
-                    emissionTotal
+                    emissionTotal,
+                    dateCreated
             );
             activityList.add(activity);
         }

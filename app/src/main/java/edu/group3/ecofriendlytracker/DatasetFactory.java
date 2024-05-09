@@ -1,9 +1,12 @@
 package edu.group3.ecofriendlytracker;
 
+import java.time.LocalDate;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import java.util.HashMap;
 import java.util.Date;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
 
 /**
  *
@@ -37,8 +40,20 @@ public class DatasetFactory {
         return weeklyDataset;
     }
     
-    public static DefaultCategoryDataset dailyChartDataset(Activity[] activities, Date date) {
+    public static DefaultCategoryDataset dailyChartDataset(Activity[] activities, LocalDate date) {
         // Construct dataset untuk bar chart daily dengan date yang ditentukan
-        return null; // Remove this
+        double emissionTotal = 0.0;
+        for (Activity activity : activities) {
+            if(activity.dateCreated().isEqual(date)) {
+                emissionTotal += activity.emissionTotal();
+            }
+        }
+        
+        // Generate sum of emission produced
+        DefaultCategoryDataset dailyDataset = new DefaultCategoryDataset();
+        dailyDataset.addValue(emissionTotal, "Daily Emission Produced", date.toString());
+        dailyDataset.addValue(5.75, "Average Emission Per Capita in 2021", "Average Emission Per Capita in 2021");
+
+        return dailyDataset;
     }
 }

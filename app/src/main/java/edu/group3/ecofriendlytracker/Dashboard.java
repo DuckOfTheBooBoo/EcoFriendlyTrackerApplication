@@ -71,7 +71,7 @@ public class Dashboard extends javax.swing.JFrame {
         DashboardPanel = new javax.swing.JPanel();
         TabbedPane = new javax.swing.JTabbedPane();
         DailyPanel = new javax.swing.JPanel();
-        DailyChartPanel = new javax.swing.JPanel();
+        dailyChartPanel = new javax.swing.JPanel();
         DailyTitlePanel = new javax.swing.JPanel();
         DailyTitle = new javax.swing.JLabel();
         NextDaysPanel = new javax.swing.JPanel();
@@ -99,8 +99,8 @@ public class Dashboard extends javax.swing.JFrame {
 
         MainPanel.setLayout(new javax.swing.BoxLayout(MainPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        DailyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        DailyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
+        dailyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        dailyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
 
         DailyTitle.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
         DailyTitle.setText("7 March");
@@ -121,7 +121,7 @@ public class Dashboard extends javax.swing.JFrame {
         DailyPanel.setLayout(DailyPanelLayout);
         DailyPanelLayout.setHorizontalGroup(
             DailyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(DailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(dailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DailyPanelLayout.createSequentialGroup()
                 .addContainerGap(168, Short.MAX_VALUE)
                 .addComponent(DailyTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -134,7 +134,7 @@ public class Dashboard extends javax.swing.JFrame {
         DailyPanelLayout.setVerticalGroup(
             DailyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(DailyPanelLayout.createSequentialGroup()
-                .addComponent(DailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+                .addComponent(dailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
                 .addGap(27, 27, 27)
                 .addComponent(DailyTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -335,17 +335,12 @@ public class Dashboard extends javax.swing.JFrame {
         weeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
 
 
-        DefaultCategoryDataset dailyDataset = new DefaultCategoryDataset();
-        dailyDataset.addValue(300, "Daily Report", "7 March");
-        dailyDataset.addValue(200, "Daily Report", "8 March");
-        dailyDataset.addValue(150, "Daily Report", "9 March");
-        dailyDataset.addValue(100, "Daily Report", "10 March");
+        DefaultCategoryDataset dailyDataset = DatasetFactory.dailyChartDataset(activities, date);
 
-        JFreeChart Barchart = ChartFactory.createBarChart("Daily Report", "Day", "Daily Report", dailyDataset);
+        JFreeChart dailyChart = ChartFactory.createBarChart("Daily Report", "Daily emission produced", "kgCO2e", dailyDataset);
 
-        ChartPanel dailypanel = new ChartPanel (Barchart);
-        DailyChartPanel.add(dailypanel, BorderLayout.CENTER);
-                       
+        ChartPanel dailyPanel = new ChartPanel (dailyChart);
+        dailyChartPanel.add(dailyPanel, BorderLayout.CENTER);                       
     };
     
     
@@ -402,7 +397,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel ActivityPanel;
     private javax.swing.JPanel ActivityTable;
     private javax.swing.JButton AddNewActivitybtn;
-    private javax.swing.JPanel DailyChartPanel;
     private javax.swing.JPanel DailyPanel;
     private javax.swing.JLabel DailyTitle;
     private javax.swing.JPanel DailyTitlePanel;
@@ -418,6 +412,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel WeeklyPanel;
     private javax.swing.JLabel WeeksLabel;
     private javax.swing.JPanel WeeksTitlePanel;
+    private javax.swing.JPanel dailyChartPanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
