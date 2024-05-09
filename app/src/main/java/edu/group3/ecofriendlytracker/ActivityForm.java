@@ -505,7 +505,14 @@ public class ActivityForm extends javax.swing.JFrame {
             return;
         }
         
-        // Insert form data into database
+        boolean isSuccessful = databasesConnection.createNewTask(form);
+        if(isSuccessful) {
+            JOptionPane.showMessageDialog(actionPanel, "Successfully added new activity", "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(actionPanel, "An error occurred", "Status Dialog", JOptionPane.ERROR_MESSAGE);
+        }
+        this.dispose();
+        return;
     }//GEN-LAST:event_actionBtnActionPerformed
     
     private javax.swing.JSpinner numInputField;
