@@ -13,7 +13,7 @@ import static java.lang.Class.forName;
 public class DatabasesConnection {
     String host = "jdbc:mysql://localhost:3306/eftappdb";
     String username = "root";
-    String password = "";
+    String password = "GoodTime221";
 
     Connection connection;
 

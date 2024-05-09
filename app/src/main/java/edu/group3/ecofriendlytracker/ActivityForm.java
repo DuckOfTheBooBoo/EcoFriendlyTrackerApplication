@@ -19,7 +19,6 @@ import java.util.*;
 
 
 public class ActivityForm extends javax.swing.JFrame {
-    private boolean addOpVisible = false;
     private Form form;
     private Integer activityId = null;
 
@@ -77,9 +76,6 @@ public class ActivityForm extends javax.swing.JFrame {
             setupSpecificField(form.subCategory, form.specific);
         }
         
-        if(!this.form.additionalOption.isEmpty()) {
-            setupAdditionalOption(form.additionalOption);
-        }
         
         if(this.form.calcMetric > 0.0) {
             numInputField.setValue(form.calcMetric);
@@ -218,17 +214,16 @@ public class ActivityForm extends javax.swing.JFrame {
 
     private String getSpecificOptionText(String selectedSubCat) {
         switch (selectedSubCat) {
+            case "Motorcycle":
             case "Car":
                 return "Fuel type:";
             case "Public Transportation":
                 return "Transport type:";
-            case "Motorcycle":
-                return "Fuel type:";
             case "Non-emission":
                 return "Activity type:";
-            case "Natural gas or propane consumption":
-                return "Activity:";
-            case "Renewable energy":
+            case "Natural Gas and Propane consumption":
+                return "Consumption Type:";
+            case "Renewable Energy":
                 return "Type:";
             default:
                 return "";
@@ -266,8 +261,6 @@ public class ActivityForm extends javax.swing.JFrame {
         categoryComboBox = new javax.swing.JComboBox<>();
         subCatComboBox = new javax.swing.JComboBox<>();
         specificOptionCbx = new javax.swing.JComboBox<>();
-        addOpLabel = new javax.swing.JLabel();
-        addOpCbx = new javax.swing.JComboBox<>();
         calcMetricPanel = new javax.swing.JPanel();
 
         jScrollPane1.setViewportView(jTextPane1);
@@ -391,27 +384,14 @@ public class ActivityForm extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel1.add(specificOptionCbx, gridBagConstraints);
 
-        addOpLabel.setText("addOpLabel");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel1.add(addOpLabel, gridBagConstraints);
-        addOpLabel.setVisible(false);
-
-        addOpCbx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
-        addOpCbx.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addOpCbxActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel1.add(addOpCbx, gridBagConstraints);
-        addOpCbx.setVisible(false);
-
         calcMetricPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -428,10 +408,6 @@ public class ActivityForm extends javax.swing.JFrame {
 
     private void categoryComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryComboBoxActionPerformed
         // TODO add your handling code here:
-        if (addOpVisible) {
-            hideAddOpComponents();
-        }
-        
         String selectedCategory = String.valueOf(categoryComboBox.getSelectedItem());
         form.category = selectedCategory;
         
@@ -472,11 +448,7 @@ public class ActivityForm extends javax.swing.JFrame {
     }
     
     private void subCatComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subCatComboBoxActionPerformed
-        // TODO add your handling code here:
-        if (addOpVisible) {
-            hideAddOpComponents();
-        }
-        
+        // TODO add your handling code here:        
         String subCatSelection = String.valueOf(subCatComboBox.getSelectedItem());
         form.subCategory = subCatSelection;
         
@@ -494,14 +466,15 @@ public class ActivityForm extends javax.swing.JFrame {
             calcMetricLabel.setVisible(true);
             calcMetricPanel.setVisible(true);
         } else {
+            if(specificOptionSelected.contains("LPG Powered Stove")) {
+                calcMetricLabel.setText("Cooking duration (s): ");
+                calcMetricLabel.setVisible(true);
+                calcMetricPanel.setVisible(true);
+            }
+            
             switch (specificOptionSelected) {
-                case "LPG powered stove":
-                    
-                    // Show additional option components
-                    setupAdditionalOption(null);
-                    break;
                 case "Solar Panel":
-                case "Diesel generator set":
+                case "Diesel powered generator set":
                     calcMetricLabel.setText("Kilo-watt per hour (kWh):");
                     calcMetricLabel.setVisible(true);
                     calcMetricPanel.setVisible(true);
@@ -513,28 +486,8 @@ public class ActivityForm extends javax.swing.JFrame {
         pack();
     }
     
-    private void setupAdditionalOption(String selectedAddOption) {
-        addOpLabel.setText("Temperature:");
-        addOpCbx.setModel(new DefaultComboBoxModel<String>(
-                new String[] {"", "Low temperature", "Medium temperature", "High temperature"}
-        ));
-        showAddOpComponents();
-
-        calcMetricLabel.setText("Cooking duration (s):");
-        calcMetricLabel.setVisible(true);
-        calcMetricPanel.setVisible(true);
-        addOpVisible = true;
-        
-        if(selectedAddOption != null) {
-            addOpCbx.setSelectedItem(selectedAddOption);
-        }
-    }
-    
     private void specificOptionCbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_specificOptionCbxActionPerformed
         // TODO add your handling code here:
-        if (addOpVisible) {
-            hideAddOpComponents();
-        }
         
         String specificOptionSelection = String.valueOf(specificOptionCbx.getSelectedItem());
         form.specific = specificOptionSelection;
@@ -552,11 +505,6 @@ public class ActivityForm extends javax.swing.JFrame {
         
         // Insert form data into database
     }//GEN-LAST:event_actionBtnActionPerformed
-
-    private void addOpCbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOpCbxActionPerformed
-        // TODO add your handling code here:
-        form.additionalOption = addOpCbx.getSelectedItem().toString();
-    }//GEN-LAST:event_addOpCbxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -593,25 +541,11 @@ public class ActivityForm extends javax.swing.JFrame {
         });
     }
     
-    private void showAddOpComponents() {
-        addOpLabel.setVisible(true);
-        addOpCbx.setVisible(true);
-        addOpVisible = true;
-    }
-    
-    private void hideAddOpComponents() {
-        addOpLabel.setVisible(false);
-        addOpCbx.setVisible(false);
-        addOpVisible = false;
-    }
-    
     private javax.swing.JSpinner numInputField;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton actionBtn;
     private javax.swing.JPanel actionContainer;
     private javax.swing.JPanel actionPanel;
-    private javax.swing.JComboBox<String> addOpCbx;
-    private javax.swing.JLabel addOpLabel;
     private javax.swing.JLabel calcDetailLabel;
     private javax.swing.JPanel calcDetailPanel;
     private javax.swing.JLabel calcMetricLabel;
