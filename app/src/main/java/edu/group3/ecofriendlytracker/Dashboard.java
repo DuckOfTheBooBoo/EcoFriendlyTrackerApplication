@@ -4,6 +4,7 @@ package edu.group3.ecofriendlytracker;
 import java.awt.BorderLayout;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
@@ -26,14 +27,8 @@ import org.jfree.chart.plot.PiePlot;
  */
 public class Dashboard extends javax.swing.JFrame {
     
-    private Activity[] activities = {
-        new Activity(1, "Transportation", "Car", "Gasoline", 5.0, 0.81941),
-        new Activity(2, "Transportation", "Motorcycle", "Gasoline", 12.0, 1.39080),
-        new Activity(3, "Transportation", "Public transportation", "Bus", 1.5, 0.332803),
-        new Activity(4, "Transportation", "Public transportation", "Train", 39.0, 2.12940),
-        new Activity(5, "Home-energy", "Natural gas or propane consumption", "Diesel powered generator set", 48, 7.50336),
-        new Activity(6, "Home-energy", "Natural gas or propane consumption", "LPG Powered Stove (Medium temperature)", (5.0*60), 1.55000)            
-    };
+    private Activity[] activities = null;
+    private LocalDate currentDate = LocalDate.now();
     
     private DatabasesConnection dBInstance;
     
@@ -43,11 +38,12 @@ public class Dashboard extends javax.swing.JFrame {
     public Dashboard(DatabasesConnection dBInstance) {
         this.dBInstance = dBInstance;
         initComponents();
-        additionalInit();
+//        getActivities(LocalDate.of(2024, 5, 9));
         chartSetup();
+        updateTable();
     }
     
-    private void additionalInit() {
+    private void updateTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         
@@ -318,11 +314,15 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_EditActivitybtnActionPerformed
     
     
-    /**
-     * @param args the command line arguments
-     */
+    private void getActivitiesWeek(LocalDate currentDate) {
+        activities = this.dBInstance.getActivitiesAWeek(currentDate);
+    }
     
     private void chartSetup() {
+        LocalDate date = LocalDate.of(2024, 5, 9);
+
+        this.getActivitiesWeek(date);
+        
         DefaultPieDataset weeklyDataset = DatasetFactory.weeklyChartDataset(activities);
         
         JFreeChart pieChart = ChartFactory.createPieChart("Weekly data", weeklyDataset);

@@ -5,6 +5,8 @@ import java.util.*;
 
 
 import static java.lang.Class.forName;
+import java.time.LocalDate;
+import java.time.DayOfWeek;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,8 +26,41 @@ public class DatabasesConnection {
     ResultSet resultSet;
 
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
+//    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+//        Class.forName("com.mysql.cj.jdbc.Driver");
+//    }
+    
+    public Activity[] getActivitiesAWeek(LocalDate date) {
+        // Get week range from date
+        Activity[] activities = null;
+        List<LocalDate> week = new ArrayList<>();
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        
+        int daysToMonday = (dayOfWeek.getValue() - DayOfWeek.MONDAY.getValue() + 7) % 7;
+        
+        LocalDate monday = date.minusDays(daysToMonday);
+        
+        for (int i = 0; i < 7; i++) {
+            week.add(monday.plusDays(i));
+        }
+             
+        String startDate = week.get(0).toString();
+        String endDate = week.get(6).toString();
+        
+        String query = "CALL get_activities_week(?, ?);";
+        
+        ResultSet resultSet = null;
+        try(PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, startDate);
+            statement.setString(2, endDate);
+            
+            resultSet = statement.executeQuery();
+            
+            activities = ActivityHelper.activityFromResultSet(resultSet);
+        } catch (SQLException e) {
+            Logger.getLogger(DatabasesConnection.class.getName()).log(Level.SEVERE, null, e);              
+        }
+        return activities;
     }
 
 
