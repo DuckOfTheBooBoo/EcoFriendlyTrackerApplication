@@ -23,12 +23,12 @@ import org.jfree.chart.plot.PiePlot;
 public class Dashboard extends javax.swing.JFrame {
     
     private Activity[] activities = {
-        new Activity(1, "Transportation", "Car", "Gasoline", null, 5.0, 0.81941),
-        new Activity(2, "Transportation", "Motorcycle", "Gasoline", null, 12.0, 1.39080),
-        new Activity(3, "Transportation", "Public transportation", "Bus", null, 1.5, 0.332803),
-        new Activity(4, "Transportation", "Public transportation", "Train", null, 39.0, 2.12940),
-        new Activity(5, "Home-energy", "Natural gas or propane consumption", "Diesel powered generator set", null, 48, 7.50336),
-        new Activity(6, "Home-energy", "Natural gas or propane consumption", "LPG powered stove", "Medium temperatue", (5.0*60), 1.55000)            
+        new Activity(1, "Transportation", "Car", "Gasoline", 5.0, 0.81941),
+        new Activity(2, "Transportation", "Motorcycle", "Gasoline", 12.0, 1.39080),
+        new Activity(3, "Transportation", "Public transportation", "Bus", 1.5, 0.332803),
+        new Activity(4, "Transportation", "Public transportation", "Train", 39.0, 2.12940),
+        new Activity(5, "Home-energy", "Natural gas or propane consumption", "Diesel powered generator set", 48, 7.50336),
+        new Activity(6, "Home-energy", "Natural gas or propane consumption", "LPG Powered Stove (Medium temperature)", (5.0*60), 1.55000)            
     };
     
     /**
@@ -48,9 +48,6 @@ public class Dashboard extends javax.swing.JFrame {
          // Construct specific type if additionalOption is not null
             Activity activity = activities[i];
             String specificCategory = activity.specificCategory();
-            if(activity.additionalOption() != null) {
-                specificCategory += String.format(" (%s)", activity.additionalOption());
-            }
             
             Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric(), activity.emissionTotal()};
             
