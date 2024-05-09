@@ -11,7 +11,7 @@ import static java.lang.Class.forName;
  * @author kanda gtg
  */
 public class DatabasesConnection {
-    String host = "jdbc:mysql://localhost:3306/eftappdb2";
+    String host = "jdbc:mysql://localhost:3306/eftappdb";
     String username = "root";
     String password = "";
 

@@ -8,7 +8,6 @@ public class Form {
     public String category = "";
     public String subCategory = "";
     public String specific = "";
-    public String additionalOption = "";
     public double calcMetric = 0.0;
     public double emissionTotal;
     
@@ -16,13 +15,12 @@ public class Form {
         if (category.isEmpty() || category.equals("-")) return false;
         if (subCategory.isEmpty() || subCategory.equals("-")) return false;
         if (specific.isEmpty() || specific.equals("-")) return false;
-        if ((additionalOption.isEmpty() || additionalOption == null) && specific.contains("LPG")) return false;
         if (calcMetric <= 0.0) return false;
         
         return true;
     }
     
     public void print() {
-        System.out.println(String.format("%s %s %s %s %s", this.category, this.subCategory, this.specific, this.additionalOption, this.calcMetric));
+        System.out.println(String.format("%s %s %s %s", this.category, this.subCategory, this.specific, this.calcMetric));
     }
 }

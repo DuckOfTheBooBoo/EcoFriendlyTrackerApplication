@@ -8,8 +8,7 @@ public record Activity(
     int id, 
     String category, 
     String subCategory, 
-    String specificCategory, 
-    String additionalOption, 
+    String specificCategory,
     double calcMetric, 
     double emissionTotal
 ) {}

@@ -17,7 +17,7 @@ public class Emission {
         emissionMap.put("MOTORCYCLE_GASOLINE", 0.11590);
         emissionMap.put("MOTORCYCLE_ELECTRIC", 0.00929);
         emissionMap.put("PUBLIC_TRANSPORTATION_BUS", 0.22187);
-        emissionMap.put("PUBLIC_TRANSPORTATION_TRAIN", 0.22187);
+        emissionMap.put("PUBLIC_TRANSPORTATION_TRAIN", 0.05460);
         emissionMap.put("NON_EMISSION_CYCLING", 0.0);
         emissionMap.put("NON_EMISSION_WALKING", 0.0);
         emissionMap.put("NGP_LPG_LOW", 0.00267);
@@ -30,6 +30,7 @@ public class Emission {
     public static String formIdParser(Form form) {
         String subCatId, specificId;
         String emissionKey = "", additionalId = "";
+        String temperature = "";
         
         String subCatIdTemp = form.subCategory
                 .toUpperCase()
@@ -51,8 +52,10 @@ public class Emission {
         if (form.specific.toUpperCase().contains("LPG")) {
             specificId = "LPG";
             
-            additionalId = form.additionalOption
-                    .replace("temperature", "")
+            temperature = form.specific
+                    .replace("LPG ", "")
+                    .replace("Powered Stove (", "")
+                    .replace(" temperature)", "")
                     .toUpperCase();
             
         } else if (form.specific.toUpperCase().contains("GENERATOR")) {
@@ -62,9 +65,9 @@ public class Emission {
         }
         
         String emissionKeyTemp = subCatId + "_" + specificId;
-        emissionKey += additionalId.isEmpty() ? emissionKeyTemp : (emissionKeyTemp + "_" + additionalId);
+        emissionKey += temperature.isEmpty() ? emissionKeyTemp : (emissionKeyTemp + "_" + temperature);
         emissionKey = emissionKey.strip();
-        
+        System.out.println(emissionKey);
         return emissionKey;
     }
     
