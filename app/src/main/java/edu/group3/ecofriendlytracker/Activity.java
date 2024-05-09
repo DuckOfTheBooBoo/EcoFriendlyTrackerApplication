@@ -1,5 +1,7 @@
 package edu.group3.ecofriendlytracker;
 
+import java.time.LocalDate;
+
 /**
  *
  * @author altaf
@@ -10,5 +12,6 @@ public record Activity(
     String subCategory, 
     String specificCategory,
     double calcMetric, 
-    double emissionTotal
+    double emissionTotal,
+    LocalDate dateCreated
 ) {}
