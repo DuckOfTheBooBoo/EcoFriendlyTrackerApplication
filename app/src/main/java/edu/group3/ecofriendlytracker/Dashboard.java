@@ -2,6 +2,7 @@ package edu.group3.ecofriendlytracker;
 
 
 import java.awt.BorderLayout;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.chart.JFreeChart;
@@ -11,6 +12,9 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
@@ -31,13 +35,16 @@ public class Dashboard extends javax.swing.JFrame {
         new Activity(6, "Home-energy", "Natural gas or propane consumption", "LPG Powered Stove (Medium temperature)", (5.0*60), 1.55000)            
     };
     
+    private DatabasesConnection dBInstance;
+    
     /**
      * Creates new form dashboard
      */
-    public Dashboard() {
+    public Dashboard(DatabasesConnection dBInstance) {
+        this.dBInstance = dBInstance;
         initComponents();
         additionalInit();
-        ChartSetup();
+        chartSetup();
     }
     
     private void additionalInit() {
@@ -302,7 +309,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void AddNewActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddNewActivitybtnActionPerformed
         // TODO add your handling code here:
-       new ActivityForm().setVisible(true);
+       new ActivityForm(this.dBInstance).setVisible(true);
     }//GEN-LAST:event_AddNewActivitybtnActionPerformed
 
     private void EditActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditActivitybtnActionPerformed
@@ -315,7 +322,7 @@ public class Dashboard extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     
-    private void ChartSetup() {
+    private void chartSetup() {
         DefaultPieDataset weeklyDataset = DatasetFactory.weeklyChartDataset(activities);
         
         JFreeChart pieChart = ChartFactory.createPieChart("Weekly data", weeklyDataset);
@@ -366,11 +373,25 @@ public class Dashboard extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Dashboard().setVisible(true);
+                
+                System.out.println("Setting up database connection");
+                DatabasesConnection dbConnection = new DatabasesConnection();
+                
+                try {
+                    dbConnection.connect();
+                    System.out.println("Database connection established.");
+                    
+                    if(dbConnection.connection != null) {
+                        new Dashboard(dbConnection).setVisible(true);
+                    }
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

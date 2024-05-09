@@ -9,7 +9,7 @@ import java.awt.event.KeyListener;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.JLabel;
+import java.sql.Connection;
 import java.awt.GridBagConstraints;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -21,26 +21,26 @@ import java.util.*;
 public class ActivityForm extends javax.swing.JFrame {
     private Form form;
     private Integer activityId = null;
+    
+    // Database Categories, Sub-categories, Specific Type caches
+//    public static List<String> categories;
+//    public static List<String> subCategories;
+//    public static List<String> specificOptions;
 
-    // declaring var for dc classes -k
+    // Database Connection attribute
     private DatabasesConnection databasesConnection;
     
     /**
      * Creates new empty ActivityForm (CREATE)
      */
-    public ActivityForm() {
+    public ActivityForm(DatabasesConnection dBInstance) {
         initComponents();
         additionalGUIConfig();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         form = new Form();
 
         // declaring dbclasses into this class -k
-        try {
-            this.databasesConnection = new DatabasesConnection();
-            this.databasesConnection.connect();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.databasesConnection = dBInstance;
     }
     
     /**
@@ -48,7 +48,9 @@ public class ActivityForm extends javax.swing.JFrame {
      * @param activityId Id of activity in database
      * @param activityForm A Form instance that contains activity's data
      */
-    public ActivityForm(int activityId, Form activityForm) {
+    public ActivityForm(DatabasesConnection dBInstance, int activityId, Form activityForm) {
+        this.databasesConnection = dBInstance;
+
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         this.form = activityForm;
@@ -58,9 +60,9 @@ public class ActivityForm extends javax.swing.JFrame {
     }
 
     // kalo diperluin ntaran -k
-    public DatabasesConnection getDatabasesConnection() {
-        return this.databasesConnection;
-    }
+//    public DatabasesConnection getDatabasesConnection() {
+//        return this.databasesConnection;
+//    }
     
     public void populateGUIFromForm() {
         if(!this.form.category.isEmpty()) {
@@ -505,41 +507,6 @@ public class ActivityForm extends javax.swing.JFrame {
         
         // Insert form data into database
     }//GEN-LAST:event_actionBtnActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ActivityForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ActivityForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ActivityForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ActivityForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ActivityForm().setVisible(true);
-            }
-        });
-    }
     
     private javax.swing.JSpinner numInputField;
     // Variables declaration - do not modify//GEN-BEGIN:variables
