@@ -56,6 +56,11 @@ public class Dashboard extends javax.swing.JFrame {
             
             model.addRow(rowData);
         }
+        
+        var startWeek = activities[0].dateCreated().toString();
+        var endWeek = activities[6].dateCreated().toString();
+        
+        weeksLabel.setText(startWeek + " - " + endWeek);
     }    
     
     /**
@@ -80,7 +85,7 @@ public class Dashboard extends javax.swing.JFrame {
         WeeklyPanel = new javax.swing.JPanel();
         weeklyChartPanel = new javax.swing.JPanel();
         WeeksTitlePanel = new javax.swing.JPanel();
-        WeeksLabel = new javax.swing.JLabel();
+        weeksLabel = new javax.swing.JLabel();
         ActionButtonPanel = new javax.swing.JPanel();
         PreviousWeeksbtn = new javax.swing.JButton();
         NextWeeksbtn = new javax.swing.JButton();
@@ -144,14 +149,19 @@ public class Dashboard extends javax.swing.JFrame {
 
         TabbedPane.addTab("Daily", DailyPanel);
 
+        WeeklyPanel.setLayout(new javax.swing.BoxLayout(WeeklyPanel, javax.swing.BoxLayout.Y_AXIS));
+
         weeklyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         weeklyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
+        WeeklyPanel.add(weeklyChartPanel);
 
         WeeksTitlePanel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
-        WeeksLabel.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
-        WeeksLabel.setText("7 March - 14 March");
-        WeeksTitlePanel.add(WeeksLabel);
+        weeksLabel.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        weeksLabel.setText("7 March - 14 March");
+        WeeksTitlePanel.add(weeksLabel);
+
+        WeeklyPanel.add(WeeksTitlePanel);
 
         PreviousWeeksbtn.setText("Previous Weeks");
         PreviousWeeksbtn.addActionListener(new java.awt.event.ActionListener() {
@@ -169,28 +179,7 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ActionButtonPanel.add(NextWeeksbtn);
 
-        javax.swing.GroupLayout WeeklyPanelLayout = new javax.swing.GroupLayout(WeeklyPanel);
-        WeeklyPanel.setLayout(WeeklyPanelLayout);
-        WeeklyPanelLayout.setHorizontalGroup(
-            WeeklyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(WeeklyPanelLayout.createSequentialGroup()
-                .addGap(148, 148, 148)
-                .addGroup(WeeklyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(WeeksTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ActionButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(186, Short.MAX_VALUE))
-            .addComponent(weeklyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        WeeklyPanelLayout.setVerticalGroup(
-            WeeklyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(WeeklyPanelLayout.createSequentialGroup()
-                .addComponent(weeklyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(WeeksTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ActionButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
-        );
+        WeeklyPanel.add(ActionButtonPanel);
 
         TabbedPane.addTab("Weekly", WeeklyPanel);
 
@@ -247,6 +236,7 @@ public class Dashboard extends javax.swing.JFrame {
         ActionBtn.add(AddNewActivitybtn);
 
         EditActivitybtn.setText("Edit activity");
+        EditActivitybtn.setEnabled(false);
         EditActivitybtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 EditActivitybtnActionPerformed(evt);
@@ -255,6 +245,7 @@ public class Dashboard extends javax.swing.JFrame {
         ActionBtn.add(EditActivitybtn);
 
         jButton1.setText("Delete activity");
+        jButton1.setEnabled(false);
         ActionBtn.add(jButton1);
 
         ActivityTable.add(ActionBtn);
@@ -410,7 +401,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JButton PreviousWeeksbtn;
     private javax.swing.JTabbedPane TabbedPane;
     private javax.swing.JPanel WeeklyPanel;
-    private javax.swing.JLabel WeeksLabel;
     private javax.swing.JPanel WeeksTitlePanel;
     private javax.swing.JPanel dailyChartPanel;
     private javax.swing.JButton jButton1;
@@ -418,6 +408,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JPanel weeklyChartPanel;
+    private javax.swing.JLabel weeksLabel;
     // End of variables declaration//GEN-END:variables
 
 }
