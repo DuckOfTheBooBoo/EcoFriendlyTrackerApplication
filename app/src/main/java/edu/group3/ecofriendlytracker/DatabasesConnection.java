@@ -144,9 +144,9 @@ public class DatabasesConnection {
         return subCategoryId;
     }
     
-    private int getSpecificCategoryId(String specificCategory) {
+    private int getSpecificCategoryId(int subCatId, String specificCategory) {
         int specificCategoryId = 0;
-        String query = String.format("SELECT get_category_id('%s') as specific_cat_id;", specificCategory);
+        String query = String.format("SELECT get_specific_category_id(%s, '%s') as specific_cat_id;", subCatId, specificCategory);
         
         try {
             Statement statement = connection.createStatement();
@@ -162,10 +162,10 @@ public class DatabasesConnection {
         return specificCategoryId;
     }
     
-    public boolean createNewTask(Form form) {
+    public boolean createNewActivity(Form form) {
         int categoryId = getCategoryId(form.category);
         int subCategoryId = getSubCategoryId(form.subCategory);
-        int specificCategoryId = getSpecificCategoryId(form.specific);
+        int specificCategoryId = getSpecificCategoryId(subCategoryId, form.specific);
         
         String query = "INSERT INTO activity (category_id, sub_category_id, specific_cat_id, calculation_metric, emission_total) VALUES (?,?,?,?,?);";
         
@@ -176,6 +176,51 @@ public class DatabasesConnection {
             statement.setDouble(4, form.calcMetric);
             statement.setDouble(5, form.emissionTotal);
             statement.execute();
+        } catch (SQLException e) {
+            Logger.getLogger(DatabasesConnection.class.getName()).log(Level.SEVERE, null, e);   
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public boolean updateActivity(int activityId, Form form) {
+        int categoryId = getCategoryId(form.category);
+        int subCategoryId = getSubCategoryId(form.subCategory);
+        int specificCategoryId = getSpecificCategoryId(subCategoryId, form.specific);
+        
+        if (categoryId == 0 || subCategoryId == 0 || specificCategoryId == 0) {
+            System.out.println(String.format("%s %s", categoryId, form.category));
+            System.out.println(String.format("%s %s", subCategoryId, form.subCategory));
+            System.out.println(String.format("%s %s", specificCategoryId, form.specific));
+            form.print();
+            return false;
+        }
+        
+        String query = "UPDATE activity SET category_id=?, sub_category_id=?, specific_cat_id=?, calculation_metric=?, emission_total=? WHERE activity_id=?;";
+        
+        try(PreparedStatement statement = connection.prepareStatement(query);) {
+            statement.setInt(1, categoryId);
+            statement.setInt(2, subCategoryId);
+            statement.setInt(3, specificCategoryId);
+            statement.setDouble(4, form.calcMetric);
+            statement.setDouble(5, form.emissionTotal);
+            statement.setInt(6, activityId);
+            statement.execute();
+        } catch (SQLException e) {
+            Logger.getLogger(DatabasesConnection.class.getName()).log(Level.SEVERE, null, e);   
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public boolean deleteActivity(int activityId) {
+        String query = String.format("DELETE FROM activity WHERE activity_id=%s", activityId);
+        
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute(query);
         } catch (SQLException e) {
             Logger.getLogger(DatabasesConnection.class.getName()).log(Level.SEVERE, null, e);   
             return false;

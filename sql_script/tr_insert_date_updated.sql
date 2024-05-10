@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE TRIGGER insert_date_updated 
+BEFORE UPDATE ON activity
+FOR EACH ROW
+BEGIN
+  SET NEW.date_updated = CURRENT_TIMESTAMP;
+END//
+DELIMITER ;

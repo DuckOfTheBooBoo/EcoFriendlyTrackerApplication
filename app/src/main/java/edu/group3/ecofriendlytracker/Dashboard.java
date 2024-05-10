@@ -16,6 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
@@ -28,7 +32,8 @@ import org.jfree.chart.plot.PiePlot;
 public class Dashboard extends javax.swing.JFrame {
     
     private Activity[] activities = null;
-    private LocalDate currentDate = LocalDate.now();
+    private LocalDate selectedDate = LocalDate.now();
+    private Integer selectedRow = null;
     
     private DatabasesConnection dBInstance;
     
@@ -38,9 +43,36 @@ public class Dashboard extends javax.swing.JFrame {
     public Dashboard(DatabasesConnection dBInstance) {
         this.dBInstance = dBInstance;
         initComponents();
-//        getActivities(LocalDate.of(2024, 5, 9));
+        additionalInitComponents();
         chartSetup();
         updateTable();
+    }
+    
+    public void onActivityFormClosed(boolean status) {
+        if(status) {
+            chartSetup();
+            updateTable();
+        }
+    }
+    
+    private void additionalInitComponents() {
+        // Disable multi row selection
+        jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        // Add table event listener
+        ListSelectionModel selectionModel = jTable1.getSelectionModel();
+        
+        selectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent lse) {
+                selectedRow = jTable1.getSelectedRow();
+                
+                if(selectedRow != -1) {
+                    editActivitybtn.setEnabled(true);
+                    deleteActivityBtn.setEnabled(true);
+                }
+            }
+        });
     }
     
     private void updateTable() {
@@ -51,8 +83,17 @@ public class Dashboard extends javax.swing.JFrame {
          // Construct specific type if additionalOption is not null
             Activity activity = activities[i];
             String specificCategory = activity.specificCategory();
+            String metric = "";
             
-            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric(), activity.emissionTotal()};
+            if(activity.category().contains("Transportation")) {
+                metric = " (km)";
+            } else if (activity.specificCategory().contains("LPG")) {
+                metric = " (seconds)";
+            } else {
+                metric = " (kWh)";
+            }
+            
+            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
             
             model.addRow(rowData);
         }
@@ -96,8 +137,8 @@ public class Dashboard extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         ActionBtn = new javax.swing.JPanel();
         AddNewActivitybtn = new javax.swing.JButton();
-        EditActivitybtn = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        editActivitybtn = new javax.swing.JButton();
+        deleteActivityBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
@@ -218,7 +259,7 @@ public class Dashboard extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Category", "Sub-Category", "Specific Type", "Calculation Metric", "Emission Total"
+                "Category", "Sub-Category", "Specific Type", "Calculation Metric", "Emission Total (kgCO2e)"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -235,18 +276,23 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ActionBtn.add(AddNewActivitybtn);
 
-        EditActivitybtn.setText("Edit activity");
-        EditActivitybtn.setEnabled(false);
-        EditActivitybtn.addActionListener(new java.awt.event.ActionListener() {
+        editActivitybtn.setText("Edit activity");
+        editActivitybtn.setEnabled(false);
+        editActivitybtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EditActivitybtnActionPerformed(evt);
+                editActivitybtnActionPerformed(evt);
             }
         });
-        ActionBtn.add(EditActivitybtn);
+        ActionBtn.add(editActivitybtn);
 
-        jButton1.setText("Delete activity");
-        jButton1.setEnabled(false);
-        ActionBtn.add(jButton1);
+        deleteActivityBtn.setText("Delete activity");
+        deleteActivityBtn.setEnabled(false);
+        deleteActivityBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteActivityBtnActionPerformed(evt);
+            }
+        });
+        ActionBtn.add(deleteActivityBtn);
 
         ActivityTable.add(ActionBtn);
 
@@ -296,13 +342,35 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void AddNewActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddNewActivitybtnActionPerformed
         // TODO add your handling code here:
-       new ActivityForm(this.dBInstance).setVisible(true);
+       new ActivityForm(this.dBInstance, this).setVisible(true);
     }//GEN-LAST:event_AddNewActivitybtnActionPerformed
 
-    private void EditActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditActivitybtnActionPerformed
+    private void editActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActivitybtnActionPerformed
         // TODO add your handling code here:
+        // Get activity
+        Activity selectedActivity = this.activities[selectedRow];
+        Form activityForm = ActivityHelper.activityToForm(selectedActivity);
+        
+        new ActivityForm(this.dBInstance, this, selectedActivity.id(), activityForm).setVisible(true);
+    }//GEN-LAST:event_editActivitybtnActionPerformed
 
-    }//GEN-LAST:event_EditActivitybtnActionPerformed
+    private void deleteActivityBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActivityBtnActionPerformed
+        // TODO add your handling code here:
+        Activity selectedActivity = this.activities[selectedRow];
+        int reply = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the activity?", "Confirmation Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        
+        if(reply == JOptionPane.YES_OPTION) {
+            boolean isSuccessful = this.dBInstance.deleteActivity(selectedActivity.id());
+            
+            if(isSuccessful) {
+                JOptionPane.showMessageDialog(this, "Successfully deleted the activity", "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
+                chartSetup();
+                updateTable();
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to deleted the activity", "Status Dialog", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_deleteActivityBtnActionPerformed
     
     
     private void getActivitiesWeek(LocalDate currentDate) {
@@ -310,9 +378,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
     
     private void chartSetup() {
-        LocalDate date = LocalDate.of(2024, 5, 9);
-
-        this.getActivitiesWeek(date);
+        this.getActivitiesWeek(selectedDate);
         
         DefaultPieDataset weeklyDataset = DatasetFactory.weeklyChartDataset(activities);
         
@@ -326,7 +392,7 @@ public class Dashboard extends javax.swing.JFrame {
         weeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
 
 
-        DefaultCategoryDataset dailyDataset = DatasetFactory.dailyChartDataset(activities, date);
+        DefaultCategoryDataset dailyDataset = DatasetFactory.dailyChartDataset(activities, selectedDate);
 
         JFreeChart dailyChart = ChartFactory.createBarChart("Daily Report", "Daily emission produced", "kgCO2e", dailyDataset);
 
@@ -392,7 +458,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel DailyTitle;
     private javax.swing.JPanel DailyTitlePanel;
     private javax.swing.JPanel DashboardPanel;
-    private javax.swing.JButton EditActivitybtn;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JButton NextDaybtn;
     private javax.swing.JPanel NextDaysPanel;
@@ -403,7 +468,8 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel WeeklyPanel;
     private javax.swing.JPanel WeeksTitlePanel;
     private javax.swing.JPanel dailyChartPanel;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton deleteActivityBtn;
+    private javax.swing.JButton editActivitybtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
