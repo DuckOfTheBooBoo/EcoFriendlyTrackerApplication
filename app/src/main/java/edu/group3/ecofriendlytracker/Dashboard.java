@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -270,6 +271,11 @@ public class Dashboard extends javax.swing.JFrame {
 
         deleteActivityBtn.setText("Delete activity");
         deleteActivityBtn.setEnabled(false);
+        deleteActivityBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteActivityBtnActionPerformed(evt);
+            }
+        });
         ActionBtn.add(deleteActivityBtn);
 
         ActivityTable.add(ActionBtn);
@@ -331,6 +337,22 @@ public class Dashboard extends javax.swing.JFrame {
         
         new ActivityForm(this.dBInstance, selectedActivity.id(), activityForm).setVisible(true);
     }//GEN-LAST:event_editActivitybtnActionPerformed
+
+    private void deleteActivityBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActivityBtnActionPerformed
+        // TODO add your handling code here:
+        Activity selectedActivity = this.activities[selectedRow];
+        int reply = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the activity?", "Confirmation Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        
+        if(reply == JOptionPane.YES_OPTION) {
+            boolean isSuccessful = this.dBInstance.deleteActivity(selectedActivity.id());
+            
+            if(isSuccessful) {
+                JOptionPane.showMessageDialog(this, "Successfully deleted the activity", "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to deleted the activity", "Status Dialog", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_deleteActivityBtnActionPerformed
     
     
     private void getActivitiesWeek(LocalDate currentDate) {

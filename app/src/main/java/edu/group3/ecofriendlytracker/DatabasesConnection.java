@@ -215,6 +215,20 @@ public class DatabasesConnection {
         return true;
     }
     
+    public boolean deleteActivity(int activityId) {
+        String query = String.format("DELETE FROM activity WHERE activity_id=%s", activityId);
+        
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute(query);
+        } catch (SQLException e) {
+            Logger.getLogger(DatabasesConnection.class.getName()).log(Level.SEVERE, null, e);   
+            return false;
+        }
+        
+        return true;
+    }
+    
     public void connect() throws SQLException {
         this.connection = DriverManager.getConnection(host, username, password);
     }
