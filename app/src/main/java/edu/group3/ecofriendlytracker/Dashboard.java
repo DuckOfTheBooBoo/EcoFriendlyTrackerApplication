@@ -48,6 +48,13 @@ public class Dashboard extends javax.swing.JFrame {
         updateTable();
     }
     
+    public void onActivityFormClosed(boolean status) {
+        if(status) {
+            chartSetup();
+            updateTable();
+        }
+    }
+    
     private void additionalInitComponents() {
         // Disable multi row selection
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -326,7 +333,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void AddNewActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddNewActivitybtnActionPerformed
         // TODO add your handling code here:
-       new ActivityForm(this.dBInstance).setVisible(true);
+       new ActivityForm(this.dBInstance, this).setVisible(true);
     }//GEN-LAST:event_AddNewActivitybtnActionPerformed
 
     private void editActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActivitybtnActionPerformed
@@ -335,7 +342,7 @@ public class Dashboard extends javax.swing.JFrame {
         Activity selectedActivity = this.activities[selectedRow];
         Form activityForm = ActivityHelper.activityToForm(selectedActivity);
         
-        new ActivityForm(this.dBInstance, selectedActivity.id(), activityForm).setVisible(true);
+        new ActivityForm(this.dBInstance, this, selectedActivity.id(), activityForm).setVisible(true);
     }//GEN-LAST:event_editActivitybtnActionPerformed
 
     private void deleteActivityBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActivityBtnActionPerformed
@@ -348,6 +355,8 @@ public class Dashboard extends javax.swing.JFrame {
             
             if(isSuccessful) {
                 JOptionPane.showMessageDialog(this, "Successfully deleted the activity", "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
+                chartSetup();
+                updateTable();
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to deleted the activity", "Status Dialog", JOptionPane.ERROR_MESSAGE);
             }
@@ -360,9 +369,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
     
     private void chartSetup() {
-        LocalDate date = LocalDate.of(2024, 5, 9);
-
-        this.getActivitiesWeek(date);
+        this.getActivitiesWeek(selectedDate);
         
         DefaultPieDataset weeklyDataset = DatasetFactory.weeklyChartDataset(activities);
         
@@ -376,7 +383,7 @@ public class Dashboard extends javax.swing.JFrame {
         weeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
 
 
-        DefaultCategoryDataset dailyDataset = DatasetFactory.dailyChartDataset(activities, date);
+        DefaultCategoryDataset dailyDataset = DatasetFactory.dailyChartDataset(activities, selectedDate);
 
         JFreeChart dailyChart = ChartFactory.createBarChart("Daily Report", "Daily emission produced", "kgCO2e", dailyDataset);
 

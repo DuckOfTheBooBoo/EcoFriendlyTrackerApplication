@@ -21,23 +21,20 @@ import java.util.*;
 public class ActivityForm extends javax.swing.JFrame {
     private Form form;
     private Integer activityId = null;
+    private Dashboard dashboardInstance = null;
     
-    // Database Categories, Sub-categories, Specific Type caches
-//    public static List<String> categories;
-//    public static List<String> subCategories;
-//    public static List<String> specificOptions;
-
     // Database Connection attribute
     private DatabasesConnection databasesConnection;
     
     /**
      * Creates new empty ActivityForm (CREATE)
      */
-    public ActivityForm(DatabasesConnection dBInstance) {
+    public ActivityForm(DatabasesConnection dBInstance, Dashboard dashboard) {
         initComponents();
         additionalGUIConfig();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         form = new Form();
+        this.dashboardInstance = dashboard;
 
         // declaring dbclasses into this class -k
         this.databasesConnection = dBInstance;
@@ -48,13 +45,14 @@ public class ActivityForm extends javax.swing.JFrame {
      * @param activityId Id of activity in database
      * @param activityForm A Form instance that contains activity's data
      */
-    public ActivityForm(DatabasesConnection dBInstance, int activityId, Form activityForm) {
+    public ActivityForm(DatabasesConnection dBInstance, Dashboard dashboard, int activityId, Form activityForm) {
         this.databasesConnection = dBInstance;
 
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         this.form = activityForm;
         this.activityId = activityId;
+        this.dashboardInstance = dashboard;
         additionalGUIConfig();
         populateGUIFromForm();
     }
@@ -521,6 +519,8 @@ public class ActivityForm extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(actionPanel, "An error occurred", "Status Dialog", JOptionPane.ERROR_MESSAGE);
         }
+        
+        this.dashboardInstance.onActivityFormClosed(isSuccessful);
         this.dispose();
         return;
     }//GEN-LAST:event_actionBtnActionPerformed
