@@ -6,8 +6,7 @@ begin
     select category_id
     into cat_id
     from category
-    where category_name = cat_name
-    collate utf8mb4_general_ci;
+    where category_name = cat_name;
     
     if cat_id is null then
 		set cat_id = 0;

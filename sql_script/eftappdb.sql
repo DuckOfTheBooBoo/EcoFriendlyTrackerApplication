@@ -36,7 +36,7 @@ CREATE TABLE `activity` (
   `emission_total` float NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 --
 -- Dumping data for table `activity`
@@ -68,7 +68,7 @@ INSERT INTO `activity` (`activity_id`, `category_id`, `sub_category_id`, `specif
 CREATE TABLE `category` (
   `category_id` int(11) NOT NULL,
   `category_name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 --
 -- Dumping data for table `category`
@@ -86,7 +86,7 @@ CREATE TABLE `specific_category` (
   `specific_cat_id` int(11) NOT NULL,
   `sub_category_id` int(11) DEFAULT NULL,
   `specific_cat_name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 --
 -- Dumping data for table `specific_category`
@@ -119,7 +119,7 @@ CREATE TABLE `sub_category` (
   `sub_category_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   `sub_category_name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 --
 -- Dumping data for table `sub_category`

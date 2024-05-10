@@ -6,8 +6,7 @@ begin
     select sub_category_id
     into sub_cat_id
     from sub_category
-    where sub_category_name = sub_cat_name
-    collate utf8mb4_general_ci;
+    where sub_category_name = sub_cat_name;
     
     if sub_cat_id is null then
 		set sub_cat_id = 0;
