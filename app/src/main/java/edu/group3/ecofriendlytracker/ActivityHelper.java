@@ -15,6 +15,17 @@ public class ActivityHelper {
         return new Object[] {activity.category(), activity.subCategory(), activity.specificCategory(), activity.calcMetric(), activity.emissionTotal()};
     }
     
+    public static Form activityToForm(Activity activity) {
+        Form form = new Form();
+        form.category = activity.category();
+        form.subCategory = activity.subCategory();
+        form.specific = activity.specificCategory();
+        form.calcMetric = activity.calcMetric();
+        form.emissionTotal = activity.emissionTotal();
+        
+        return form;
+    }
+    
     public static Activity[] activityFromResultSet(ResultSet resultSet) throws SQLException {
         // Implementasi mengubah hasil query database ke object java, yaitu Activity array
         List<Activity> activityList = new ArrayList<>();

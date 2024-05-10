@@ -325,7 +325,11 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void editActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActivitybtnActionPerformed
         // TODO add your handling code here:
-
+        // Get activity
+        Activity selectedActivity = this.activities[selectedRow];
+        Form activityForm = ActivityHelper.activityToForm(selectedActivity);
+        
+        new ActivityForm(this.dBInstance, selectedActivity.id(), activityForm).setVisible(true);
     }//GEN-LAST:event_editActivitybtnActionPerformed
     
     

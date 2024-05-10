@@ -505,9 +505,19 @@ public class ActivityForm extends javax.swing.JFrame {
             return;
         }
         
-        boolean isSuccessful = databasesConnection.createNewTask(form);
+        boolean isSuccessful = false;
+        String mode = "";
+        // Form is in create mode
+        if(activityId == null) {
+            mode = "added new";
+            isSuccessful = databasesConnection.createNewActivity(form);
+        } else { // Form is in update mode
+            mode = "updated the";
+            isSuccessful = databasesConnection.updateActivity(activityId, form);
+        }
+        
         if(isSuccessful) {
-            JOptionPane.showMessageDialog(actionPanel, "Successfully added new activity", "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(actionPanel, String.format("Successfully %s activity", mode), "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(actionPanel, "An error occurred", "Status Dialog", JOptionPane.ERROR_MESSAGE);
         }
