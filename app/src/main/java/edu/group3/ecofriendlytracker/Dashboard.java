@@ -80,29 +80,32 @@ public class Dashboard extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         
-        for(int i = 0; i < activities.length; i++) {
-         // Construct specific type if additionalOption is not null
-            Activity activity = activities[i];
-            String specificCategory = activity.specificCategory();
-            String metric = "";
-            
-            if(activity.category().contains("Transportation")) {
-                metric = " (km)";
-            } else if (activity.specificCategory().contains("LPG")) {
-                metric = " (seconds)";
-            } else {
-                metric = " (kWh)";
+        if(activities.length > 0) {
+            for(int i = 0; i < activities.length; i++) {
+             // Construct specific type if additionalOption is not null
+                Activity activity = activities[i];
+                String specificCategory = activity.specificCategory();
+                String metric = "";
+
+                if(activity.category().contains("Transportation")) {
+                    metric = " (km)";
+                } else if (activity.specificCategory().contains("LPG")) {
+                    metric = " (seconds)";
+                } else {
+                    metric = " (kWh)";
+                }
+
+                Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
+
+                model.addRow(rowData);
             }
-            
-            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
-            
-            model.addRow(rowData);
+        
+        
+            var startWeek = activities[0].dateCreated().toString();
+            var endWeek = activities[activities.length-1].dateCreated().toString();
+
+            weeksLabel.setText(startWeek + " - " + endWeek);
         }
-        
-        var startWeek = activities[0].dateCreated().toString();
-        var endWeek = activities[6].dateCreated().toString();
-        
-        weeksLabel.setText(startWeek + " - " + endWeek);
     }    
     
     /**
