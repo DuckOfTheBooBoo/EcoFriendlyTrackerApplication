@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
@@ -28,7 +31,8 @@ import org.jfree.chart.plot.PiePlot;
 public class Dashboard extends javax.swing.JFrame {
     
     private Activity[] activities = null;
-    private LocalDate currentDate = LocalDate.now();
+    private LocalDate selectedDate = LocalDate.now();
+    private Integer selectedRow = null;
     
     private DatabasesConnection dBInstance;
     
@@ -38,9 +42,29 @@ public class Dashboard extends javax.swing.JFrame {
     public Dashboard(DatabasesConnection dBInstance) {
         this.dBInstance = dBInstance;
         initComponents();
-//        getActivities(LocalDate.of(2024, 5, 9));
+        additionalInitComponents();
         chartSetup();
         updateTable();
+    }
+    
+    private void additionalInitComponents() {
+        // Disable multi row selection
+        jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        // Add table event listener
+        ListSelectionModel selectionModel = jTable1.getSelectionModel();
+        
+        selectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent lse) {
+                selectedRow = jTable1.getSelectedRow();
+                
+                if(selectedRow != -1) {
+                    editActivitybtn.setEnabled(true);
+                    deleteActivityBtn.setEnabled(true);
+                }
+            }
+        });
     }
     
     private void updateTable() {
@@ -96,8 +120,8 @@ public class Dashboard extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         ActionBtn = new javax.swing.JPanel();
         AddNewActivitybtn = new javax.swing.JButton();
-        EditActivitybtn = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        editActivitybtn = new javax.swing.JButton();
+        deleteActivityBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
@@ -235,18 +259,18 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ActionBtn.add(AddNewActivitybtn);
 
-        EditActivitybtn.setText("Edit activity");
-        EditActivitybtn.setEnabled(false);
-        EditActivitybtn.addActionListener(new java.awt.event.ActionListener() {
+        editActivitybtn.setText("Edit activity");
+        editActivitybtn.setEnabled(false);
+        editActivitybtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EditActivitybtnActionPerformed(evt);
+                editActivitybtnActionPerformed(evt);
             }
         });
-        ActionBtn.add(EditActivitybtn);
+        ActionBtn.add(editActivitybtn);
 
-        jButton1.setText("Delete activity");
-        jButton1.setEnabled(false);
-        ActionBtn.add(jButton1);
+        deleteActivityBtn.setText("Delete activity");
+        deleteActivityBtn.setEnabled(false);
+        ActionBtn.add(deleteActivityBtn);
 
         ActivityTable.add(ActionBtn);
 
@@ -299,10 +323,10 @@ public class Dashboard extends javax.swing.JFrame {
        new ActivityForm(this.dBInstance).setVisible(true);
     }//GEN-LAST:event_AddNewActivitybtnActionPerformed
 
-    private void EditActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditActivitybtnActionPerformed
+    private void editActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActivitybtnActionPerformed
         // TODO add your handling code here:
 
-    }//GEN-LAST:event_EditActivitybtnActionPerformed
+    }//GEN-LAST:event_editActivitybtnActionPerformed
     
     
     private void getActivitiesWeek(LocalDate currentDate) {
@@ -392,7 +416,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel DailyTitle;
     private javax.swing.JPanel DailyTitlePanel;
     private javax.swing.JPanel DashboardPanel;
-    private javax.swing.JButton EditActivitybtn;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JButton NextDaybtn;
     private javax.swing.JPanel NextDaysPanel;
@@ -403,7 +426,8 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel WeeklyPanel;
     private javax.swing.JPanel WeeksTitlePanel;
     private javax.swing.JPanel dailyChartPanel;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton deleteActivityBtn;
+    private javax.swing.JButton editActivitybtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;

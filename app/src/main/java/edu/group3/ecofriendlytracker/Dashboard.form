@@ -312,16 +312,16 @@
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AddNewActivitybtnActionPerformed"/>
                           </Events>
                         </Component>
-                        <Component class="javax.swing.JButton" name="EditActivitybtn">
+                        <Component class="javax.swing.JButton" name="editActivitybtn">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Edit activity"/>
                             <Property name="enabled" type="boolean" value="false"/>
                           </Properties>
                           <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="EditActivitybtnActionPerformed"/>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editActivitybtnActionPerformed"/>
                           </Events>
                         </Component>
-                        <Component class="javax.swing.JButton" name="jButton1">
+                        <Component class="javax.swing.JButton" name="deleteActivityBtn">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Delete activity"/>
                             <Property name="enabled" type="boolean" value="false"/>
