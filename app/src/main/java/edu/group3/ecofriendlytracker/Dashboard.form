@@ -258,7 +258,7 @@
                                 <Column editable="true" title="Sub-Category" type="java.lang.Object"/>
                                 <Column editable="true" title="Specific Type" type="java.lang.Object"/>
                                 <Column editable="true" title="Calculation Metric" type="java.lang.Object"/>
-                                <Column editable="true" title="Emission Total" type="java.lang.Object"/>
+                                <Column editable="true" title="Emission Total (kgCO2e)" type="java.lang.Object"/>
                               </Table>
                             </Property>
                             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

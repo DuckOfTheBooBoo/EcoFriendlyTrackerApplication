@@ -83,8 +83,17 @@ public class Dashboard extends javax.swing.JFrame {
          // Construct specific type if additionalOption is not null
             Activity activity = activities[i];
             String specificCategory = activity.specificCategory();
+            String metric = "";
             
-            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric(), activity.emissionTotal()};
+            if(activity.category().contains("Transportation")) {
+                metric = " (km)";
+            } else if (activity.specificCategory().contains("LPG")) {
+                metric = " (seconds)";
+            } else {
+                metric = " (kWh)";
+            }
+            
+            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
             
             model.addRow(rowData);
         }
@@ -250,7 +259,7 @@ public class Dashboard extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Category", "Sub-Category", "Specific Type", "Calculation Metric", "Emission Total"
+                "Category", "Sub-Category", "Specific Type", "Calculation Metric", "Emission Total (kgCO2e)"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
