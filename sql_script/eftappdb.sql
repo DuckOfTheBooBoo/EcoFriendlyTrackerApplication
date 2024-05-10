@@ -34,7 +34,7 @@ CREATE TABLE `activity` (
   `specific_cat_id` int(11) NOT NULL,
   `calculation_metric` float NOT NULL,
   `emission_total` float NOT NULL,
-  `date_created` datetime NOT NULL,
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_updated` datetime DEFAULT NULL
 );
 
