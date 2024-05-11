@@ -11,9 +11,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -22,7 +19,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.category.CategoryDataset;
 
 
 /**
@@ -34,6 +33,8 @@ public class Dashboard extends javax.swing.JFrame {
     private Activity[] activities = null;
     private LocalDate selectedDate = LocalDate.now();
     private Integer selectedRow = null;
+    private JFreeChart weeklyChart;
+    private JFreeChart dailyChart;
     
     private DatabasesConnection dBInstance;
     
@@ -44,13 +45,13 @@ public class Dashboard extends javax.swing.JFrame {
         this.dBInstance = dBInstance;
         initComponents();
         additionalInitComponents();
-        chartSetup();
+        chartSetup(false);
         updateTable();
     }
     
     public void onActivityFormClosed(boolean status) {
         if(status) {
-            chartSetup();
+            chartSetup(true);
             updateTable();
         }
     }
@@ -79,29 +80,32 @@ public class Dashboard extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         
-        for(int i = 0; i < activities.length; i++) {
-         // Construct specific type if additionalOption is not null
-            Activity activity = activities[i];
-            String specificCategory = activity.specificCategory();
-            String metric = "";
-            
-            if(activity.category().contains("Transportation")) {
-                metric = " (km)";
-            } else if (activity.specificCategory().contains("LPG")) {
-                metric = " (seconds)";
-            } else {
-                metric = " (kWh)";
+        if(activities.length > 0) {
+            for(int i = 0; i < activities.length; i++) {
+             // Construct specific type if additionalOption is not null
+                Activity activity = activities[i];
+                String specificCategory = activity.specificCategory();
+                String metric = "";
+
+                if(activity.category().contains("Transportation")) {
+                    metric = " (km)";
+                } else if (activity.specificCategory().contains("LPG")) {
+                    metric = " (seconds)";
+                } else {
+                    metric = " (kWh)";
+                }
+
+                Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
+
+                model.addRow(rowData);
             }
-            
-            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
-            
-            model.addRow(rowData);
+        
+        
+            var startWeek = activities[0].dateCreated().toString();
+            var endWeek = activities[activities.length-1].dateCreated().toString();
+
+            weeksLabel.setText(startWeek + " - " + endWeek);
         }
-        
-        var startWeek = activities[0].dateCreated().toString();
-        var endWeek = activities[6].dateCreated().toString();
-        
-        weeksLabel.setText(startWeek + " - " + endWeek);
     }    
     
     /**
@@ -364,7 +368,7 @@ public class Dashboard extends javax.swing.JFrame {
             
             if(isSuccessful) {
                 JOptionPane.showMessageDialog(this, "Successfully deleted the activity", "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
-                chartSetup();
+                chartSetup(true);
                 updateTable();
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to deleted the activity", "Status Dialog", JOptionPane.ERROR_MESSAGE);
@@ -377,27 +381,32 @@ public class Dashboard extends javax.swing.JFrame {
         activities = this.dBInstance.getActivitiesAWeek(currentDate);
     }
     
-    private void chartSetup() {
+    private void chartSetup(boolean isUpdate) {
         this.getActivitiesWeek(selectedDate);
         
         DefaultPieDataset weeklyDataset = DatasetFactory.weeklyChartDataset(activities);
-        
-        JFreeChart pieChart = ChartFactory.createPieChart("Weekly data", weeklyDataset);
-        PiePlot plot = (PiePlot) pieChart.getPlot();
-        
-        PieSectionLabelGenerator gen = new StandardPieSectionLabelGenerator("{0}: {1} ({2})", new DecimalFormat("0"), new DecimalFormat("0%"));
-        plot.setLabelGenerator(gen);
-                
-        ChartPanel chartpanel = new ChartPanel(pieChart);
-        weeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
-
-
         DefaultCategoryDataset dailyDataset = DatasetFactory.dailyChartDataset(activities, selectedDate);
+        
+        if(isUpdate) {
+            ((PiePlot) weeklyChart.getPlot()).setDataset(weeklyDataset);
+            ((CategoryPlot) dailyChart.getPlot()).setDataset(dailyDataset);
+        } else {
+            weeklyChart = ChartFactory.createPieChart("Weekly data", weeklyDataset);
+            dailyChart = ChartFactory.createBarChart("Daily Report", "Daily emission produced", "kgCO2e", dailyDataset);
 
-        JFreeChart dailyChart = ChartFactory.createBarChart("Daily Report", "Daily emission produced", "kgCO2e", dailyDataset);
+            PiePlot weeklyPlot = (PiePlot) weeklyChart.getPlot();
+            CategoryPlot dailyPLot = (CategoryPlot) dailyChart.getPlot();
 
-        ChartPanel dailyPanel = new ChartPanel (dailyChart);
-        dailyChartPanel.add(dailyPanel, BorderLayout.CENTER);                       
+            PieSectionLabelGenerator gen = new StandardPieSectionLabelGenerator("{0}: {1} ({2})", new DecimalFormat("0"), new DecimalFormat("0%"));
+            weeklyPlot.setLabelGenerator(gen);
+
+            ChartPanel chartpanel = new ChartPanel(weeklyChart);
+            weeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
+
+            ChartPanel dailyPanel = new ChartPanel (dailyChart);
+            dailyChartPanel.add(dailyPanel, BorderLayout.CENTER);                       
+        }
+        
     };
     
     
