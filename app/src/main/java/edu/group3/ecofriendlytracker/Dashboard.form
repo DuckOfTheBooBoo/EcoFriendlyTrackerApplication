@@ -134,6 +134,9 @@
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="PreviousDaybtn">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Segoe UI" size="12" style="1"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Previous Day"/>
                           </Properties>
                           <Events>
@@ -142,6 +145,9 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="NextDaybtn">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Segoe UI" size="12" style="1"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Next Day"/>
                           </Properties>
                         </Component>
@@ -201,6 +207,9 @@
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="PreviousWeeksbtn">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Segoe UI" size="12" style="1"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Previous Weeks"/>
                           </Properties>
                           <Events>
@@ -209,6 +218,9 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="NextWeeksbtn">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Segoe UI" size="12" style="1"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Next Weeks"/>
                           </Properties>
                           <Events>
@@ -234,7 +246,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel1">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Segoe UI" size="24" style="0"/>
+                          <Font name="Segoe UI" size="24" style="1"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="0"/>
                         <Property name="text" type="java.lang.String" value="Activity List"/>
@@ -254,36 +266,36 @@
                           <Properties>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                               <Table columnCount="5" rowCount="20">
-                                <Column editable="true" title="Category" type="java.lang.Object"/>
-                                <Column editable="true" title="Sub-Category" type="java.lang.Object"/>
-                                <Column editable="true" title="Specific Type" type="java.lang.Object"/>
-                                <Column editable="true" title="Calculation Metric" type="java.lang.Object"/>
-                                <Column editable="true" title="Emission Total (kgCO2e)" type="java.lang.Object"/>
+                                <Column editable="false" title="Category" type="java.lang.Object"/>
+                                <Column editable="false" title="Sub-Category" type="java.lang.Object"/>
+                                <Column editable="false" title="Specific Type" type="java.lang.Object"/>
+                                <Column editable="false" title="Calculation Metric" type="java.lang.Object"/>
+                                <Column editable="false" title="Emission Total (kgCO2e)" type="java.lang.Object"/>
                               </Table>
                             </Property>
                             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                               <TableColumnModel selectionModel="0">
-                                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                                <Column maxWidth="95" minWidth="95" prefWidth="-1" resizable="true">
                                   <Title/>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
-                                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                                <Column maxWidth="216" minWidth="216" prefWidth="-1" resizable="true">
                                   <Title/>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
-                                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                                <Column maxWidth="241" minWidth="241" prefWidth="-1" resizable="true">
                                   <Title/>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
-                                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                                <Column maxWidth="113" minWidth="113" prefWidth="-1" resizable="true">
                                   <Title/>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
-                                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                                <Column maxWidth="186" minWidth="186" prefWidth="-1" resizable="true">
                                   <Title/>
                                   <Editor/>
                                   <Renderer/>
@@ -306,6 +318,12 @@
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="AddNewActivitybtn">
                           <Properties>
+                            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="0" green="ff" red="33" type="rgb"/>
+                            </Property>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Segoe UI" size="14" style="1"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Add new activity"/>
                           </Properties>
                           <Events>
@@ -314,6 +332,12 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="editActivitybtn">
                           <Properties>
+                            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="0" green="cc" red="ff" type="rgb"/>
+                            </Property>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Segoe UI" size="14" style="1"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Edit activity"/>
                             <Property name="enabled" type="boolean" value="false"/>
                           </Properties>
@@ -323,6 +347,12 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="deleteActivityBtn">
                           <Properties>
+                            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="0" green="0" red="ff" type="rgb"/>
+                            </Property>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Segoe UI" size="14" style="1"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Delete activity"/>
                             <Property name="enabled" type="boolean" value="false"/>
                           </Properties>

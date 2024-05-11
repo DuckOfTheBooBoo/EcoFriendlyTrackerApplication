@@ -156,6 +156,7 @@ public class Dashboard extends javax.swing.JFrame {
         DailyTitle.setText("7 March");
         DailyTitlePanel.add(DailyTitle);
 
+        PreviousDaybtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         PreviousDaybtn.setText("Previous Day");
         PreviousDaybtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -164,6 +165,7 @@ public class Dashboard extends javax.swing.JFrame {
         });
         NextDaysPanel.add(PreviousDaybtn);
 
+        NextDaybtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         NextDaybtn.setText("Next Day");
         NextDaysPanel.add(NextDaybtn);
 
@@ -208,6 +210,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         WeeklyPanel.add(WeeksTitlePanel);
 
+        PreviousWeeksbtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         PreviousWeeksbtn.setText("Previous Weeks");
         PreviousWeeksbtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -216,6 +219,7 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ActionButtonPanel.add(PreviousWeeksbtn);
 
+        NextWeeksbtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         NextWeeksbtn.setText("Next Weeks");
         NextWeeksbtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -232,7 +236,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         ActivityTable.setLayout(new javax.swing.BoxLayout(ActivityTable, javax.swing.BoxLayout.Y_AXIS));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Activity List");
         ActivityTable.add(jLabel1);
@@ -265,13 +269,35 @@ public class Dashboard extends javax.swing.JFrame {
             new String [] {
                 "Category", "Sub-Category", "Specific Type", "Calculation Metric", "Emission Total (kgCO2e)"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setMinWidth(95);
+            jTable1.getColumnModel().getColumn(0).setMaxWidth(95);
+            jTable1.getColumnModel().getColumn(1).setMinWidth(216);
+            jTable1.getColumnModel().getColumn(1).setMaxWidth(216);
+            jTable1.getColumnModel().getColumn(2).setMinWidth(241);
+            jTable1.getColumnModel().getColumn(2).setMaxWidth(241);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(113);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(113);
+            jTable1.getColumnModel().getColumn(4).setMinWidth(186);
+            jTable1.getColumnModel().getColumn(4).setMaxWidth(186);
+        }
 
         ActivityTable.add(jScrollPane1);
 
         ActionBtn.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 20, 30));
 
+        AddNewActivitybtn.setBackground(new java.awt.Color(51, 255, 0));
+        AddNewActivitybtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         AddNewActivitybtn.setText("Add new activity");
         AddNewActivitybtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -280,6 +306,8 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ActionBtn.add(AddNewActivitybtn);
 
+        editActivitybtn.setBackground(new java.awt.Color(255, 204, 0));
+        editActivitybtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         editActivitybtn.setText("Edit activity");
         editActivitybtn.setEnabled(false);
         editActivitybtn.addActionListener(new java.awt.event.ActionListener() {
@@ -289,6 +317,8 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ActionBtn.add(editActivitybtn);
 
+        deleteActivityBtn.setBackground(new java.awt.Color(255, 0, 0));
+        deleteActivityBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         deleteActivityBtn.setText("Delete activity");
         deleteActivityBtn.setEnabled(false);
         deleteActivityBtn.addActionListener(new java.awt.event.ActionListener() {
