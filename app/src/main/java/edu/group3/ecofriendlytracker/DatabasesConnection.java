@@ -33,16 +33,7 @@ public class DatabasesConnection {
     public Activity[] getActivitiesAWeek(LocalDate date) {
         // Get week range from date
         Activity[] activities = null;
-        List<LocalDate> week = new ArrayList<>();
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-        
-        int daysToMonday = (dayOfWeek.getValue() - DayOfWeek.MONDAY.getValue() + 7) % 7;
-        
-        LocalDate monday = date.minusDays(daysToMonday);
-        
-        for (int i = 0; i < 7; i++) {
-            week.add(monday.plusDays(i));
-        }
+        List<LocalDate> week = DateHelper.getDaysOfWeek(date);
              
         String startDate = week.get(0).toString();
         String endDate = week.get(6).toString();
