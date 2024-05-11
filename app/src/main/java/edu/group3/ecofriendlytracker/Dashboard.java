@@ -45,13 +45,13 @@ public class Dashboard extends javax.swing.JFrame {
         this.dBInstance = dBInstance;
         initComponents();
         additionalInitComponents();
-        chartSetup(false);
+        chartSetup(false, true);
         updateTable();
     }
     
     public void onActivityFormClosed(boolean status) {
         if(status) {
-            chartSetup(true);
+            chartSetup(true, true);
             updateTable();
         }
     }
@@ -80,32 +80,31 @@ public class Dashboard extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         
-        if(activities.length > 0) {
-            for(int i = 0; i < activities.length; i++) {
-             // Construct specific type if additionalOption is not null
-                Activity activity = activities[i];
-                String specificCategory = activity.specificCategory();
-                String metric = "";
+        for(int i = 0; i < activities.length; i++) {
+         // Construct specific type if additionalOption is not null
+            Activity activity = activities[i];
+            String specificCategory = activity.specificCategory();
+            String metric = "";
 
-                if(activity.category().contains("Transportation")) {
-                    metric = " (km)";
-                } else if (activity.specificCategory().contains("LPG")) {
-                    metric = " (seconds)";
-                } else {
-                    metric = " (kWh)";
-                }
-
-                Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
-
-                model.addRow(rowData);
+            if(activity.category().contains("Transportation")) {
+                metric = " (km)";
+            } else if (activity.specificCategory().contains("LPG")) {
+                metric = " (seconds)";
+            } else {
+                metric = " (kWh)";
             }
-        
-        
-            var startWeek = activities[0].dateCreated().toString();
-            var endWeek = activities[activities.length-1].dateCreated().toString();
 
-            weeksLabel.setText(startWeek + " - " + endWeek);
+            Object[] rowData = {activity.category(), activity.subCategory(), specificCategory, activity.calcMetric() + metric, activity.emissionTotal()};
+
+            model.addRow(rowData);
         }
+
+        var week = DateHelper.getDaysOfWeek(selectedDate);
+        var startWeek = week.get(0).toString();
+        var endWeek = week.get(6).toString();
+
+        weeksLabel.setText(startWeek + " - " + endWeek);
+        dailyTitle.setText(selectedDate.toString());
     }    
     
     /**
@@ -120,13 +119,6 @@ public class Dashboard extends javax.swing.JFrame {
         MainPanel = new javax.swing.JPanel();
         DashboardPanel = new javax.swing.JPanel();
         TabbedPane = new javax.swing.JTabbedPane();
-        DailyPanel = new javax.swing.JPanel();
-        dailyChartPanel = new javax.swing.JPanel();
-        DailyTitlePanel = new javax.swing.JPanel();
-        DailyTitle = new javax.swing.JLabel();
-        NextDaysPanel = new javax.swing.JPanel();
-        PreviousDaybtn = new javax.swing.JButton();
-        NextDaybtn = new javax.swing.JButton();
         WeeklyPanel = new javax.swing.JPanel();
         weeklyChartPanel = new javax.swing.JPanel();
         WeeksTitlePanel = new javax.swing.JPanel();
@@ -134,6 +126,13 @@ public class Dashboard extends javax.swing.JFrame {
         ActionButtonPanel = new javax.swing.JPanel();
         PreviousWeeksbtn = new javax.swing.JButton();
         NextWeeksbtn = new javax.swing.JButton();
+        DailyPanel = new javax.swing.JPanel();
+        dailyChartPanel = new javax.swing.JPanel();
+        DailyTitlePanel = new javax.swing.JPanel();
+        dailyTitle = new javax.swing.JLabel();
+        NextDaysPanel = new javax.swing.JPanel();
+        PreviousDaybtn = new javax.swing.JButton();
+        NextDaybtn = new javax.swing.JButton();
         ActivityPanel = new javax.swing.JPanel();
         ActivityTable = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -149,12 +148,50 @@ public class Dashboard extends javax.swing.JFrame {
 
         MainPanel.setLayout(new javax.swing.BoxLayout(MainPanel, javax.swing.BoxLayout.LINE_AXIS));
 
+        WeeklyPanel.setLayout(new javax.swing.BoxLayout(WeeklyPanel, javax.swing.BoxLayout.Y_AXIS));
+
+        weeklyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        weeklyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
+        WeeklyPanel.add(weeklyChartPanel);
+
+        WeeksTitlePanel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+
+        weeksLabel.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        weeksLabel.setText("7 March - 14 March");
+        WeeksTitlePanel.add(weeksLabel);
+
+        WeeklyPanel.add(WeeksTitlePanel);
+
+        PreviousWeeksbtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        PreviousWeeksbtn.setText("Previous Week");
+        PreviousWeeksbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PreviousWeeksbtnActionPerformed(evt);
+            }
+        });
+        ActionButtonPanel.add(PreviousWeeksbtn);
+
+        NextWeeksbtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        NextWeeksbtn.setText("Next Week");
+        NextWeeksbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NextWeeksbtnActionPerformed(evt);
+            }
+        });
+        ActionButtonPanel.add(NextWeeksbtn);
+
+        WeeklyPanel.add(ActionButtonPanel);
+
+        TabbedPane.addTab("Weekly", WeeklyPanel);
+
         dailyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         dailyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
 
-        DailyTitle.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
-        DailyTitle.setText("7 March");
-        DailyTitlePanel.add(DailyTitle);
+        dailyTitle.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        dailyTitle.setText("7 March");
+        DailyTitlePanel.add(dailyTitle);
+
+        NextDaysPanel.setLayout(new javax.swing.BoxLayout(NextDaysPanel, javax.swing.BoxLayout.LINE_AXIS));
 
         PreviousDaybtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         PreviousDaybtn.setText("Previous Day");
@@ -167,6 +204,11 @@ public class Dashboard extends javax.swing.JFrame {
 
         NextDaybtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         NextDaybtn.setText("Next Day");
+        NextDaybtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NextDaybtnActionPerformed(evt);
+            }
+        });
         NextDaysPanel.add(NextDaybtn);
 
         javax.swing.GroupLayout DailyPanelLayout = new javax.swing.GroupLayout(DailyPanel);
@@ -186,7 +228,7 @@ public class Dashboard extends javax.swing.JFrame {
         DailyPanelLayout.setVerticalGroup(
             DailyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(DailyPanelLayout.createSequentialGroup()
-                .addComponent(dailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+                .addComponent(dailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
                 .addGap(27, 27, 27)
                 .addComponent(DailyTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -195,42 +237,6 @@ public class Dashboard extends javax.swing.JFrame {
         );
 
         TabbedPane.addTab("Daily", DailyPanel);
-
-        WeeklyPanel.setLayout(new javax.swing.BoxLayout(WeeklyPanel, javax.swing.BoxLayout.Y_AXIS));
-
-        weeklyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        weeklyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
-        WeeklyPanel.add(weeklyChartPanel);
-
-        WeeksTitlePanel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        weeksLabel.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
-        weeksLabel.setText("7 March - 14 March");
-        WeeksTitlePanel.add(weeksLabel);
-
-        WeeklyPanel.add(WeeksTitlePanel);
-
-        PreviousWeeksbtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        PreviousWeeksbtn.setText("Previous Weeks");
-        PreviousWeeksbtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PreviousWeeksbtnActionPerformed(evt);
-            }
-        });
-        ActionButtonPanel.add(PreviousWeeksbtn);
-
-        NextWeeksbtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        NextWeeksbtn.setText("Next Weeks");
-        NextWeeksbtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NextWeeksbtnActionPerformed(evt);
-            }
-        });
-        ActionButtonPanel.add(NextWeeksbtn);
-
-        WeeklyPanel.add(ActionButtonPanel);
-
-        TabbedPane.addTab("Weekly", WeeklyPanel);
 
         ActivityPanel.setLayout(new javax.swing.BoxLayout(ActivityPanel, javax.swing.BoxLayout.LINE_AXIS));
 
@@ -363,15 +369,24 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void NextWeeksbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextWeeksbtnActionPerformed
         // TODO add your handling code here:
+        this.selectedDate = DateHelper.getMondayFromNextWeek(selectedDate);
+        chartSetup(true, true);
+        updateTable();
     }//GEN-LAST:event_NextWeeksbtnActionPerformed
 
     private void PreviousWeeksbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousWeeksbtnActionPerformed
         // TODO add your handling code here:
+        this.selectedDate = DateHelper.getSundayFromPreviousWeek(selectedDate);
+        chartSetup(true, true);
+        updateTable();
     }//GEN-LAST:event_PreviousWeeksbtnActionPerformed
 
     
     private void PreviousDaybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousDaybtnActionPerformed
         // TODO add your handling code here:
+        this.selectedDate = this.selectedDate.minusDays(1);
+        chartSetup(true, true);
+        updateTable();
     }//GEN-LAST:event_PreviousDaybtnActionPerformed
 
     private void AddNewActivitybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddNewActivitybtnActionPerformed
@@ -398,21 +413,30 @@ public class Dashboard extends javax.swing.JFrame {
             
             if(isSuccessful) {
                 JOptionPane.showMessageDialog(this, "Successfully deleted the activity", "Status Dialog", JOptionPane.INFORMATION_MESSAGE);
-                chartSetup(true);
+                chartSetup(true, true);
                 updateTable();
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to deleted the activity", "Status Dialog", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_deleteActivityBtnActionPerformed
+
+    private void NextDaybtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextDaybtnActionPerformed
+        // TODO add your handling code here:
+        this.selectedDate = this.selectedDate.plusDays(1);
+        chartSetup(true, true);
+        updateTable();
+    }//GEN-LAST:event_NextDaybtnActionPerformed
     
     
     private void getActivitiesWeek(LocalDate currentDate) {
         activities = this.dBInstance.getActivitiesAWeek(currentDate);
     }
     
-    private void chartSetup(boolean isUpdate) {
-        this.getActivitiesWeek(selectedDate);
+    private void chartSetup(boolean isUpdate, boolean isDoRefetch) {
+        if(isDoRefetch) {
+            this.getActivitiesWeek(selectedDate);
+        }
         
         DefaultPieDataset weeklyDataset = DatasetFactory.weeklyChartDataset(activities);
         DefaultCategoryDataset dailyDataset = DatasetFactory.dailyChartDataset(activities, selectedDate);
@@ -482,6 +506,7 @@ public class Dashboard extends javax.swing.JFrame {
                     
                 } catch (SQLException ex) {
                     Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(1);
                 }
             }
         });
@@ -494,7 +519,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel ActivityTable;
     private javax.swing.JButton AddNewActivitybtn;
     private javax.swing.JPanel DailyPanel;
-    private javax.swing.JLabel DailyTitle;
     private javax.swing.JPanel DailyTitlePanel;
     private javax.swing.JPanel DashboardPanel;
     private javax.swing.JPanel MainPanel;
@@ -507,6 +531,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel WeeklyPanel;
     private javax.swing.JPanel WeeksTitlePanel;
     private javax.swing.JPanel dailyChartPanel;
+    private javax.swing.JLabel dailyTitle;
     private javax.swing.JButton deleteActivityBtn;
     private javax.swing.JButton editActivitybtn;
     private javax.swing.JLabel jLabel1;
