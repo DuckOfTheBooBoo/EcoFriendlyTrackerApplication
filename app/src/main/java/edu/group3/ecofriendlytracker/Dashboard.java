@@ -194,7 +194,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        TabbedPane.addTab("Daily", DailyPanel);
+        // TabbedPane.addTab("Daily", DailyPanel);
 
         WeeklyPanel.setLayout(new javax.swing.BoxLayout(WeeklyPanel, javax.swing.BoxLayout.Y_AXIS));
 
@@ -231,6 +231,7 @@ public class Dashboard extends javax.swing.JFrame {
         WeeklyPanel.add(ActionButtonPanel);
 
         TabbedPane.addTab("Weekly", WeeklyPanel);
+				TabbedPane.addTab("Daily", DailyPanel);
 
         ActivityPanel.setLayout(new javax.swing.BoxLayout(ActivityPanel, javax.swing.BoxLayout.LINE_AXIS));
 
