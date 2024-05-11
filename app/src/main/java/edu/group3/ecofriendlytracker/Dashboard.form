@@ -165,7 +165,7 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="dailyChartPanel" pref="467" max="32767" attributes="0"/>
+                              <Component id="dailyChartPanel" pref="475" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                               <Component id="DailyTitlePanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -194,7 +194,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JLabel" name="DailyTitle">
+                        <Component class="javax.swing.JLabel" name="dailyTitle">
                           <Properties>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="Segoe UI Semibold" size="18" style="1"/>
@@ -206,7 +206,7 @@
                     </Container>
                     <Container class="javax.swing.JPanel" name="NextDaysPanel">
 
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="PreviousDaybtn">
                           <Properties>
@@ -226,6 +226,9 @@
                             </Property>
                             <Property name="text" type="java.lang.String" value="Next Day"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="NextDaybtnActionPerformed"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>
