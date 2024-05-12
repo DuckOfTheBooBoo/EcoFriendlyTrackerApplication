@@ -2,6 +2,8 @@ package edu.group3.ecofriendlytracker;
 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
@@ -25,6 +27,10 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import javax.swing.JFrame;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 
 
 /**
@@ -89,6 +95,9 @@ public class Dashboard extends javax.swing.JFrame {
                 if(selectedRow != -1) {
                     editActivitybtn.setEnabled(true);
                     deleteActivityBtn.setEnabled(true);
+                    selectedDate = activities[selectedRow].dateCreated();
+                    chartSetup(true, false);
+                    dailyTitle.setText(selectedDate.toString());
                 }
             }
         });
@@ -490,20 +499,35 @@ public class Dashboard extends javax.swing.JFrame {
             ((PiePlot) weeklyChart.getPlot()).setDataset(weeklyDataset);
             ((CategoryPlot) dailyChart.getPlot()).setDataset(dailyDataset);
         } else {
-            weeklyChart = ChartFactory.createPieChart("Weekly data", weeklyDataset);
-            dailyChart = ChartFactory.createBarChart("Daily Report", "Daily emission produced", "kgCO2e", dailyDataset);
+            weeklyChart = ChartFactory.createPieChart("Weekly Emission Produced", weeklyDataset);
+            dailyChart = ChartFactory.createStackedBarChart("Daily Emisson Produced", "Daily emission produced", "kgCO2e", dailyDataset);
 
             PiePlot weeklyPlot = (PiePlot) weeklyChart.getPlot();
-            CategoryPlot dailyPLot = (CategoryPlot) dailyChart.getPlot();
-
-            PieSectionLabelGenerator gen = new StandardPieSectionLabelGenerator("{0}: {1} kgCO2e ({2})", new DecimalFormat("0"), new DecimalFormat("0%"));
+            CategoryPlot dailyPlot = (CategoryPlot) dailyChart.getPlot();
+            
+            // Pie chart style customize
+            PieSectionLabelGenerator gen = new StandardPieSectionLabelGenerator("{0}: {1} kgCO2e ({2})", new DecimalFormat("0.00"), new DecimalFormat("0%"));
             weeklyPlot.setLabelGenerator(gen);
-
+            weeklyPlot.setLabelBackgroundPaint(Color.WHITE);
+            weeklyPlot.setLabelFont(new Font("SansSerif", Font.BOLD, 13));
+            weeklyPlot.setBackgroundPaint(Color.WHITE);
+            
+            // Bar chart style customize
+            CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator("{2} kgCO2e", new DecimalFormat("0.00"));
+            var dailyRenderer = dailyPlot.getRenderer();
+            dailyRenderer.setDefaultItemLabelGenerator(generator);
+            dailyRenderer.setDefaultItemLabelsVisible(true);
+            dailyRenderer.setDefaultItemLabelFont(new Font("SansSerif", Font.BOLD, 12));
+            
+            
+            dailyPlot.setBackgroundPaint(Color.WHITE);
+            
             ChartPanel chartpanel = new ChartPanel(weeklyChart);
-            weeklyChartPanel.add(chartpanel, BorderLayout.CENTER);
-
-            ChartPanel dailyPanel = new ChartPanel (dailyChart);
-            dailyChartPanel.add(dailyPanel, BorderLayout.CENTER);                       
+            weeklyChartPanel.add(chartpanel,BorderLayout.CENTER);
+            
+            ChartPanel dailyPanel = new ChartPanel(dailyChart);
+            dailyChartPanel.add(dailyPanel,BorderLayout.CENTER);
+            
         }
         syncChartPanelHeight();
     };

@@ -22,8 +22,8 @@ public class Emission {
         emissionMap.put("NON_EMISSION_WALKING", 0.0);
         emissionMap.put("NGP_LPG_LOW", 0.00267);
         emissionMap.put("NGP_LPG_MEDIUM", 0.00517);
-        emissionMap.put("NGP_LPG_HIGH", 0.15632);
-        emissionMap.put("NGP_GENSET", 0.00783);
+        emissionMap.put("NGP_LPG_HIGH", 0.00783);
+        emissionMap.put("NGP_GENSET", 0.15632);
         emissionMap.put("RE_SOLAR_PANEL", 0.0);
     }
     
