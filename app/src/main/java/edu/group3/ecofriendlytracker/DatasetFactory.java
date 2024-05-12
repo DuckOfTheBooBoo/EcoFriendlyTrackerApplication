@@ -63,7 +63,7 @@ public class DatasetFactory {
         
         // Generate sum of emission produced           
         DefaultCategoryDataset dailyDataset = new DefaultCategoryDataset();
-        dailyDataset.addValue(5.75, "Average Emission Per Capita in 2021", "Average Emission Per Capita in 2021");
+        dailyDataset.addValue(5.57, "Average Emission Per Capita in 2021", "Average Emission Per Capita in 2021");
 
         for(String key : dailyEmissionMap.keySet()) {
             double emission = dailyEmissionMap.get(key);
