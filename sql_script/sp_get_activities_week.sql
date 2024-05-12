@@ -7,7 +7,8 @@ BEGIN
 		sub_category_name, 
 		specific_cat_name,
 		calculation_metric,
-		emission_total
+		emission_total,
+		date_created
 	FROM activity ac
 	JOIN category c ON c.category_id = ac.category_id
 	JOIN sub_category sc ON sc.sub_category_id = ac.sub_category_id
