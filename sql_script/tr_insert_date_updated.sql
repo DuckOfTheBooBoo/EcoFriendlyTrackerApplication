@@ -1,0 +1,11 @@
+DELIMITER //
+
+CREATE TRIGGER tr_update_date_updated
+BEFORE UPDATE ON activity
+FOR EACH ROW
+BEGIN
+    SET NEW.date_updated = CURRENT_TIMESTAMP;
+END;
+//
+
+DELIMITER ;
