@@ -20,13 +20,13 @@ public class DatasetFactory {
         // Populate with empty values
         for(Activity activity : activities) {
             // Construct key
-            String key = String.format("%s (%s)", activity.subCategory(), activity.specificCategory());
+            String key = String.format("%s", activity.subCategory());
             emissionSummary.put(key, 0.0);
         }
         
         // Sum
         for(Activity activity : activities) {
-            String key = String.format("%s (%s)", activity.subCategory(), activity.specificCategory());
+            String key = String.format("%s", activity.subCategory());
             double emission = emissionSummary.get(key);
             emission += activity.emissionTotal();
             emissionSummary.put(key, emission);
@@ -42,18 +42,34 @@ public class DatasetFactory {
     
     public static DefaultCategoryDataset dailyChartDataset(Activity[] activities, LocalDate date) {
         // Construct dataset untuk bar chart daily dengan date yang ditentukan
+        HashMap<String, Double> dailyEmissionMap = new HashMap<>();
         double emissionTotal = 0.0;
+        
+        // Populate map
         for (Activity activity : activities) {
             if(activity.dateCreated().isEqual(date)) {
-                emissionTotal += activity.emissionTotal();
+                dailyEmissionMap.put(activity.subCategory(), 0.0);
             }
         }
         
-        // Generate sum of emission produced
+        for (Activity activity : activities) {
+            if(activity.dateCreated().isEqual(date)) {
+                emissionTotal += activity.emissionTotal();
+                
+                double emission = dailyEmissionMap.get(activity.subCategory());
+                dailyEmissionMap.put(activity.subCategory(), emission + activity.emissionTotal());
+            }
+        }
+        
+        // Generate sum of emission produced           
         DefaultCategoryDataset dailyDataset = new DefaultCategoryDataset();
-        dailyDataset.addValue(emissionTotal, "Daily Emission Produced", date.toString());
         dailyDataset.addValue(5.75, "Average Emission Per Capita in 2021", "Average Emission Per Capita in 2021");
 
+        for(String key : dailyEmissionMap.keySet()) {
+            double emission = dailyEmissionMap.get(key);
+            dailyDataset.addValue(emission, key, date.toString());
+        }
+        
         return dailyDataset;
     }
 }
