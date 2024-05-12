@@ -2,6 +2,9 @@ package edu.group3.ecofriendlytracker;
 
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -21,7 +24,7 @@ import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
-import org.jfree.data.category.CategoryDataset;
+import javax.swing.JFrame;
 
 
 /**
@@ -42,11 +45,26 @@ public class Dashboard extends javax.swing.JFrame {
      * Creates new form dashboard
      */
     public Dashboard(DatabasesConnection dBInstance) {
+        setTitle("Eco Friendly Tracker Application");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.dBInstance = dBInstance;
         initComponents();
         additionalInitComponents();
         chartSetup(false, true);
         updateTable();
+        
+        
+        addWindowStateListener(new WindowStateListener() {
+            public void windowStateChanged(WindowEvent e) {
+                if ((e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
+                    syncChartPanelHeight();
+                } else if ((e.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED) {
+                     
+                } else {
+                    syncChartPanelHeight();
+                }
+            }
+        });
     }
     
     public void onActivityFormClosed(boolean status) {
@@ -74,6 +92,18 @@ public class Dashboard extends javax.swing.JFrame {
                 }
             }
         });
+    }
+    
+    public void syncChartPanelHeight() {
+        var dailyWidth = dailyChartPanel.getSize().width;
+        var weeklyWidth = weeklyChartPanel.getSize().width;
+        var scrollPaneHeight = jScrollPane1.getSize().height;
+        weeklyChartPanel.setPreferredSize(new java.awt.Dimension(weeklyWidth, scrollPaneHeight));
+        weeklyChartPanel.setSize(new java.awt.Dimension(weeklyWidth, scrollPaneHeight));
+        dailyChartPanel.setSize(new java.awt.Dimension(dailyWidth, scrollPaneHeight));
+        var weeklyHeight = weeklyChartPanel.getSize().getHeight();
+        var dailyHeight = weeklyChartPanel.getSize().getHeight();
+        System.out.printf("%s %s %s\n",weeklyHeight, dailyHeight, scrollPaneHeight);
     }
     
     private void updateTable() {
@@ -115,22 +145,23 @@ public class Dashboard extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         MainPanel = new javax.swing.JPanel();
         DashboardPanel = new javax.swing.JPanel();
         TabbedPane = new javax.swing.JTabbedPane();
         WeeklyPanel = new javax.swing.JPanel();
         weeklyChartPanel = new javax.swing.JPanel();
-        WeeksTitlePanel = new javax.swing.JPanel();
+        bottomSection = new javax.swing.JPanel();
         weeksLabel = new javax.swing.JLabel();
         ActionButtonPanel = new javax.swing.JPanel();
         PreviousWeeksbtn = new javax.swing.JButton();
         NextWeeksbtn = new javax.swing.JButton();
         DailyPanel = new javax.swing.JPanel();
         dailyChartPanel = new javax.swing.JPanel();
-        DailyTitlePanel = new javax.swing.JPanel();
+        dailyBottomPanel = new javax.swing.JPanel();
         dailyTitle = new javax.swing.JLabel();
-        NextDaysPanel = new javax.swing.JPanel();
+        dailyNavBtnPanel = new javax.swing.JPanel();
         PreviousDaybtn = new javax.swing.JButton();
         NextDaybtn = new javax.swing.JButton();
         ActivityPanel = new javax.swing.JPanel();
@@ -148,19 +179,24 @@ public class Dashboard extends javax.swing.JFrame {
 
         MainPanel.setLayout(new javax.swing.BoxLayout(MainPanel, javax.swing.BoxLayout.LINE_AXIS));
 
+        TabbedPane.setPreferredSize(new java.awt.Dimension(557, 400));
+
+        WeeklyPanel.setPreferredSize(new java.awt.Dimension(231, 400));
         WeeklyPanel.setLayout(new javax.swing.BoxLayout(WeeklyPanel, javax.swing.BoxLayout.Y_AXIS));
 
         weeklyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        weeklyChartPanel.setMaximumSize(new java.awt.Dimension(2147483647, 450));
+        weeklyChartPanel.setMinimumSize(new java.awt.Dimension(600, 400));
+        weeklyChartPanel.setPreferredSize(new java.awt.Dimension(557, 441));
         weeklyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
         WeeklyPanel.add(weeklyChartPanel);
 
-        WeeksTitlePanel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        bottomSection.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        bottomSection.setLayout(new java.awt.GridBagLayout());
 
         weeksLabel.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
         weeksLabel.setText("7 March - 14 March");
-        WeeksTitlePanel.add(weeksLabel);
-
-        WeeklyPanel.add(WeeksTitlePanel);
+        bottomSection.add(weeksLabel, new java.awt.GridBagConstraints());
 
         PreviousWeeksbtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         PreviousWeeksbtn.setText("Previous Week");
@@ -180,18 +216,32 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ActionButtonPanel.add(NextWeeksbtn);
 
-        WeeklyPanel.add(ActionButtonPanel);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        bottomSection.add(ActionButtonPanel, gridBagConstraints);
+
+        WeeklyPanel.add(bottomSection);
 
         TabbedPane.addTab("Weekly", WeeklyPanel);
 
+        DailyPanel.setLayout(new javax.swing.BoxLayout(DailyPanel, javax.swing.BoxLayout.Y_AXIS));
+
         dailyChartPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        dailyChartPanel.setPreferredSize(new java.awt.Dimension(500, 441));
         dailyChartPanel.setLayout(new java.awt.BorderLayout(10, 10));
+        DailyPanel.add(dailyChartPanel);
+
+        dailyBottomPanel.setPreferredSize(new java.awt.Dimension(198, 100));
+        dailyBottomPanel.setLayout(new java.awt.GridBagLayout());
 
         dailyTitle.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
         dailyTitle.setText("7 March");
-        DailyTitlePanel.add(dailyTitle);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
+        dailyBottomPanel.add(dailyTitle, gridBagConstraints);
 
-        NextDaysPanel.setLayout(new javax.swing.BoxLayout(NextDaysPanel, javax.swing.BoxLayout.LINE_AXIS));
+        dailyNavBtnPanel.setLayout(new javax.swing.BoxLayout(dailyNavBtnPanel, javax.swing.BoxLayout.LINE_AXIS));
 
         PreviousDaybtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         PreviousDaybtn.setText("Previous Day");
@@ -200,7 +250,7 @@ public class Dashboard extends javax.swing.JFrame {
                 PreviousDaybtnActionPerformed(evt);
             }
         });
-        NextDaysPanel.add(PreviousDaybtn);
+        dailyNavBtnPanel.add(PreviousDaybtn);
 
         NextDaybtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         NextDaybtn.setText("Next Day");
@@ -209,32 +259,14 @@ public class Dashboard extends javax.swing.JFrame {
                 NextDaybtnActionPerformed(evt);
             }
         });
-        NextDaysPanel.add(NextDaybtn);
+        dailyNavBtnPanel.add(NextDaybtn);
 
-        javax.swing.GroupLayout DailyPanelLayout = new javax.swing.GroupLayout(DailyPanel);
-        DailyPanel.setLayout(DailyPanelLayout);
-        DailyPanelLayout.setHorizontalGroup(
-            DailyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(dailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DailyPanelLayout.createSequentialGroup()
-                .addContainerGap(168, Short.MAX_VALUE)
-                .addComponent(DailyTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(243, 243, 243))
-            .addGroup(DailyPanelLayout.createSequentialGroup()
-                .addGap(137, 137, 137)
-                .addComponent(NextDaysPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        DailyPanelLayout.setVerticalGroup(
-            DailyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DailyPanelLayout.createSequentialGroup()
-                .addComponent(dailyChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
-                .addGap(27, 27, 27)
-                .addComponent(DailyTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(NextDaysPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        dailyBottomPanel.add(dailyNavBtnPanel, gridBagConstraints);
+
+        DailyPanel.add(dailyBottomPanel);
 
         TabbedPane.addTab("Daily", DailyPanel);
 
@@ -248,6 +280,7 @@ public class Dashboard extends javax.swing.JFrame {
         ActivityTable.add(jLabel1);
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(456, 500));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -300,7 +333,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         ActivityTable.add(jScrollPane1);
 
-        ActionBtn.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 20, 30));
+        ActionBtn.setLayout(new java.awt.GridBagLayout());
 
         AddNewActivitybtn.setBackground(new java.awt.Color(51, 255, 0));
         AddNewActivitybtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -310,7 +343,11 @@ public class Dashboard extends javax.swing.JFrame {
                 AddNewActivitybtnActionPerformed(evt);
             }
         });
-        ActionBtn.add(AddNewActivitybtn);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        ActionBtn.add(AddNewActivitybtn, gridBagConstraints);
 
         editActivitybtn.setBackground(new java.awt.Color(255, 204, 0));
         editActivitybtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -321,7 +358,11 @@ public class Dashboard extends javax.swing.JFrame {
                 editActivitybtnActionPerformed(evt);
             }
         });
-        ActionBtn.add(editActivitybtn);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        ActionBtn.add(editActivitybtn, gridBagConstraints);
 
         deleteActivityBtn.setBackground(new java.awt.Color(255, 0, 0));
         deleteActivityBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -332,7 +373,11 @@ public class Dashboard extends javax.swing.JFrame {
                 deleteActivityBtnActionPerformed(evt);
             }
         });
-        ActionBtn.add(deleteActivityBtn);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        ActionBtn.add(deleteActivityBtn, gridBagConstraints);
 
         ActivityTable.add(ActionBtn);
 
@@ -355,7 +400,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(DashboardPanelLayout.createSequentialGroup()
-                        .addComponent(TabbedPane)
+                        .addComponent(TabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
                     .addComponent(ActivityPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
@@ -451,7 +496,7 @@ public class Dashboard extends javax.swing.JFrame {
             PiePlot weeklyPlot = (PiePlot) weeklyChart.getPlot();
             CategoryPlot dailyPLot = (CategoryPlot) dailyChart.getPlot();
 
-            PieSectionLabelGenerator gen = new StandardPieSectionLabelGenerator("{0}: {1} ({2})", new DecimalFormat("0"), new DecimalFormat("0%"));
+            PieSectionLabelGenerator gen = new StandardPieSectionLabelGenerator("{0}: {1} kgCO2e ({2})", new DecimalFormat("0"), new DecimalFormat("0%"));
             weeklyPlot.setLabelGenerator(gen);
 
             ChartPanel chartpanel = new ChartPanel(weeklyChart);
@@ -460,7 +505,7 @@ public class Dashboard extends javax.swing.JFrame {
             ChartPanel dailyPanel = new ChartPanel (dailyChart);
             dailyChartPanel.add(dailyPanel, BorderLayout.CENTER);                       
         }
-        
+        syncChartPanelHeight();
     };
     
     
@@ -519,18 +564,18 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel ActivityTable;
     private javax.swing.JButton AddNewActivitybtn;
     private javax.swing.JPanel DailyPanel;
-    private javax.swing.JPanel DailyTitlePanel;
     private javax.swing.JPanel DashboardPanel;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JButton NextDaybtn;
-    private javax.swing.JPanel NextDaysPanel;
     private javax.swing.JButton NextWeeksbtn;
     private javax.swing.JButton PreviousDaybtn;
     private javax.swing.JButton PreviousWeeksbtn;
     private javax.swing.JTabbedPane TabbedPane;
     private javax.swing.JPanel WeeklyPanel;
-    private javax.swing.JPanel WeeksTitlePanel;
+    private javax.swing.JPanel bottomSection;
+    private javax.swing.JPanel dailyBottomPanel;
     private javax.swing.JPanel dailyChartPanel;
+    private javax.swing.JPanel dailyNavBtnPanel;
     private javax.swing.JLabel dailyTitle;
     private javax.swing.JButton deleteActivityBtn;
     private javax.swing.JButton editActivitybtn;

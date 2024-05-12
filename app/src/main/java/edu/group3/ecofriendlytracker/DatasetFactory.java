@@ -20,13 +20,13 @@ public class DatasetFactory {
         // Populate with empty values
         for(Activity activity : activities) {
             // Construct key
-            String key = String.format("%s (%s)", activity.subCategory(), activity.specificCategory());
+            String key = String.format("%s", activity.subCategory());
             emissionSummary.put(key, 0.0);
         }
         
         // Sum
         for(Activity activity : activities) {
-            String key = String.format("%s (%s)", activity.subCategory(), activity.specificCategory());
+            String key = String.format("%s", activity.subCategory());
             double emission = emissionSummary.get(key);
             emission += activity.emissionTotal();
             emissionSummary.put(key, emission);
