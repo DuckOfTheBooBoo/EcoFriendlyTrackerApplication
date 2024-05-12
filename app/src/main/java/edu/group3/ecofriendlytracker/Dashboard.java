@@ -112,7 +112,6 @@ public class Dashboard extends javax.swing.JFrame {
         dailyChartPanel.setSize(new java.awt.Dimension(dailyWidth, scrollPaneHeight));
         var weeklyHeight = weeklyChartPanel.getSize().getHeight();
         var dailyHeight = weeklyChartPanel.getSize().getHeight();
-        System.out.printf("%s %s %s\n",weeklyHeight, dailyHeight, scrollPaneHeight);
     }
     
     private void updateTable() {
